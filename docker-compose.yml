@@ -1,0 +1,33 @@
+version: "2"
+services:
+  indico-web:
+    build:
+        context: ./indico
+        args:
+            base_url: "http:\\/\\/localhost:8000"
+    depends_on:
+        - indico-redis
+        - indico-postgres
+    ports:
+     - "8000:8000"
+    links:
+     - indico-redis
+     - indico-postgres
+    environment:
+     - PGHOST=indico-postgres
+     - PGUSER=indico
+     - PGPASSWORD=indicopass
+     - PGDATABASE=indico
+    volumes:
+        - './data/archive:/opt/indico/archive:z'
+        - './data/log:/opt/indico/log:z'
+    tmpfs:
+        - /opt/indico/tmp:rw,size=787448k,uid=1000
+  indico-redis:
+    image: redis
+  indico-postgres:
+    image: postgres:9.6
+    environment:
+        - POSTGRES_USER=indico
+        - POSTGRES_PASSWORD=indicopass
+        - POSTGRES_DB=indico
