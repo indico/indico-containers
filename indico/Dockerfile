@@ -11,10 +11,14 @@ RUN useradd indico -g users -u 1000
 
 RUN yum install -y python-devel python-virtualenv gcc libxml2-devel libxslt-devel postgresql postgresql-devel
 RUN mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive}
-RUN chown -R indico:users /opt/indico/{log,archive,tmp,cache,assets}
+RUN chown -R indico:users /opt/indico
+
+COPY entrypoint.sh /opt/indico/entrypoint.sh
+RUN chmod 755 /opt/indico/entrypoint.sh
+
+USER indico
 RUN virtualenv /opt/indico/env
 
-RUN echo ". $INDICO_VIRTUALENV/activate" > ~/.bashrc
 RUN ${pip} install pgcli
 
 RUN ${pip} install --upgrade pip
@@ -27,13 +31,10 @@ RUN ${INDICO_VIRTUALENV}/indico-setup create_configs /opt/indico/etc
 COPY indico.conf /opt/indico/etc/indico.conf
 RUN sed -i "s/BASEURL/${base_url}/" /opt/indico/etc/indico.conf
 
-COPY entrypoint.sh /opt/indico/entrypoint.sh
-RUN chmod 755 /opt/indico/entrypoint.sh
-
 VOLUME /opt/indico/archive
 VOLUME /opt/indico/log
 
 EXPOSE 8000
 
-USER indico
+RUN echo ". $INDICO_VIRTUALENV/activate" > ~/.bashrc
 ENTRYPOINT /opt/indico/entrypoint.sh
