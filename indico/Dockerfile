@@ -37,4 +37,4 @@ VOLUME /opt/indico/log
 EXPOSE 8000
 
 RUN echo ". $INDICO_VIRTUALENV/activate" > ~/.bashrc
-ENTRYPOINT /opt/indico/entrypoint.sh
+ENTRYPOINT /opt/indico/entrypoint.sh $PGDATABASE

@@ -2,6 +2,15 @@
 
 . /opt/indico/env/bin/activate
 
+db_name=$1
+
+psql -lqt | cut -d \| -f 1 | grep -qw $db_name
+
+until [ $? -eq 0 ]; do
+    sleep 1
+    psql -lqt | cut -d \| -f 1 | grep -qw $db_name
+done
+
 psql -c 'SELECT * FROM events.events'
 
 if [ $? -eq 1 ]; then
