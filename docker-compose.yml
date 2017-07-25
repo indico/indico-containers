@@ -1,18 +1,16 @@
 version: "2"
 services:
-  indico-web:
+  indico-web: &indico-web
     build:
         context: ./indico
-        args:
-            base_url: "http:\\/\\/localhost:8000"
+    command: ./opt/indico/run_indico.sh
     depends_on:
         - indico-redis
-        - indico-postgres
+        - indico-celery
     ports:
      - "8000:8000"
     links:
      - indico-redis
-     - indico-postgres
     environment:
      - PGHOST=indico-postgres
      - PGUSER=indico
@@ -23,6 +21,13 @@ services:
         - './data/log:/opt/indico/log:z'
     tmpfs:
         - /opt/indico/tmp:rw,size=787448k,uid=1000
+  indico-celery:
+    <<: *indico-web
+    command: ./opt/indico/run_celery.sh
+    ports:
+      - "8888:8888"
+    depends_on:
+      - indico-redis
   indico-redis:
     image: redis
   indico-postgres:
