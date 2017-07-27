@@ -2,28 +2,30 @@ version: "2"
 services:
   indico-web: &indico-web
     build:
-        context: ./indico
-    command: ./opt/indico/run_indico.sh
+      context: ./indico
+      args:
+        base_url: "http:\\/\\/localhost:8080"
+    command: /opt/indico/run_indico.sh
     depends_on:
-        - indico-redis
-        - indico-celery
+      - indico-redis
+      - indico-celery
     ports:
-     - "8000:8000"
+      - "8000:8000"
     links:
-     - indico-redis
+      - indico-redis
     environment:
-     - PGHOST=indico-postgres
-     - PGUSER=indico
-     - PGPASSWORD=indicopass
-     - PGDATABASE=indico
+      - PGHOST=indico-postgres
+      - PGUSER=indico
+      - PGPASSWORD=indicopass
+      - PGDATABASE=indico
     volumes:
-        - './data/archive:/opt/indico/archive:z'
-        - './data/log:/opt/indico/log:z'
+      - './data/archive:/opt/indico/archive:z'
+      - './data/log/nginx:/opt/indico/log/nginx:z'
     tmpfs:
         - /opt/indico/tmp:rw,size=787448k,uid=1000
   indico-celery:
     <<: *indico-web
-    command: ./opt/indico/run_celery.sh
+    command: /opt/indico/run_celery.sh
     ports:
       - "8888:8888"
     depends_on:
@@ -36,3 +38,11 @@ services:
         - POSTGRES_USER=indico
         - POSTGRES_PASSWORD=indicopass
         - POSTGRES_DB=indico
+  indico-nginx:
+    image: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/indico.conf
+    volumes_from:
+      - indico-web

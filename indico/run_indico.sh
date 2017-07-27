@@ -21,4 +21,4 @@ if [ $? -eq 1 ]; then
 fi
 
 echo 'Starting Indico...'
-indico run -h 0.0.0.0 -u http://localhost:8000
+uwsgi /etc/uwsgi.ini

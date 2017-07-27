@@ -25,6 +25,7 @@ RUN ${pip} install pgcli
 RUN ${pip} install --upgrade pip
 RUN ${pip} install https://pypi.python.org/packages/26/e4/9aafeddba9d28a81a8b40d85cdee9d674a93fe5040825ef1bb03287ea768/indico_fonts-1.1-py2.py3-none-any.whl#md5=eb8b908fdc2b25799cbc50ed380212ee
 RUN ${pip} install --pre indico
+RUN ${pip} install uwsgi
 
 RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/indico setup create_configs /opt/indico/etc
@@ -32,7 +33,6 @@ RUN ${INDICO_VIRTUALENV}/indico setup create_configs /opt/indico/etc
 COPY indico.conf /opt/indico/etc/indico.conf
 RUN sed -i "s/BASEURL/${base_url}/" /opt/indico/etc/indico.conf
 
-VOLUME /opt/indico/archive
-VOLUME /opt/indico/log
+COPY uwsgi.ini /etc/uwsgi.ini
 
 EXPOSE 8000
