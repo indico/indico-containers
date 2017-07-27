@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /opt/indico/env/bin/activate
+. /opt/indico/.venv/bin/activate
 
 export SQLAlchemyDatabaseURI="postgresql://$PGUSER:$PGPASSWORD@$PGHOST/$PGDATABASE"
 
