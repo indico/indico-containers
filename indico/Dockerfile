@@ -11,11 +11,11 @@ RUN useradd indico -g users -u 1000
 
 RUN apt update
 RUN apt install -y postgresql
-RUN bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive}'
+RUN bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
 RUN chown -R indico:users /opt/indico
 
 COPY run_indico.sh run_celery.sh /opt/indico/
-RUN chmod 755 /opt/indico/run_indico.sh /opt/indico/run_celery.sh
+RUN chmod 755 /opt/indico/run_*.sh
 
 USER indico
 RUN virtualenv /opt/indico/.venv
@@ -34,5 +34,3 @@ COPY indico.conf /opt/indico/etc/indico.conf
 RUN sed -i "s/BASEURL/${base_url}/" /opt/indico/etc/indico.conf
 
 COPY uwsgi.ini /etc/uwsgi.ini
-
-EXPOSE 8000

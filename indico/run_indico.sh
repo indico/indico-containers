@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . /opt/indico/.venv/bin/activate
 
@@ -19,6 +19,9 @@ if [ $? -eq 1 ]; then
     echo 'CREATE EXTENSION pg_trgm;' | psql
     indico db prepare
 fi
+
+rm -rf /opt/indico/static/*
+cp -rL /opt/indico/htdocs /opt/indico/static/
 
 echo 'Starting Indico...'
 uwsgi /etc/uwsgi.ini

@@ -21,6 +21,7 @@ services:
     volumes:
       - './data/archive:/opt/indico/archive:z'
       - './data/log/nginx:/opt/indico/log/nginx:z'
+      - 'static-files:/opt/indico/static:z'
     tmpfs:
         - /opt/indico/tmp:rw,size=787448k,uid=1000
   indico-celery:
@@ -30,6 +31,7 @@ services:
       - "8888:8888"
     depends_on:
       - indico-redis
+    volumes: []
   indico-redis:
     image: redis
   indico-postgres:
@@ -42,7 +44,10 @@ services:
     image: nginx
     ports:
       - "8080:8080"
+    command: bash -c "usermod -G users nginx && nginx -g 'daemon off;'"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/indico.conf
+      - './nginx.conf:/etc/nginx/conf.d/indico.conf'
     volumes_from:
       - indico-web
+volumes:
+  static-files:
