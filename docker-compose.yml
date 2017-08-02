@@ -1,10 +1,7 @@
 version: "2"
 services:
   indico-web: &indico-web
-    build:
-      context: ./indico
-      args:
-        base_url: "http:\\/\\/localhost:8080"
+    build: indico
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis
@@ -14,23 +11,38 @@ services:
     links:
       - indico-redis
     environment:
+      - BASEURL=http://localhost:8080
       - PGHOST=indico-postgres
       - PGUSER=indico
       - PGPASSWORD=indicopass
       - PGDATABASE=indico
+      - SMTP_SERVER=localhost
+      - SMTP_PORT=8025
+      - SMTP_LOGIN
+      - SMTP_PASSWORD
+      - SMTP_USE_TLS=no
+      - INDICO_DEFAULT_TIMEZONE
+      - INDICO_DEFAULT_LOCALE
+      - INDICO_ROUTE_OLD_URLS=False
+      - INDICO_CHECKIN_APP_CLIENT_ID
+      - INDICO_CUSTOMIZATION_DIR=/opt/indico/custom
+      - INDICO_CUSTOMIZATION_DEBUG=False
+      - INDICO_LOGO_URL
+      - REDIS_CACHE_URL=redis://indico-redis:6379/1
+      - CELERY_BROKER=redis://indico-redis:6379/0
     volumes:
       - './data/archive:/opt/indico/archive:z'
       - './data/log/nginx:/opt/indico/log/nginx:z'
       - 'static-files:/opt/indico/static:z'
+      - 'customization:/opt/indico/custom:z'
     tmpfs:
         - /opt/indico/tmp:rw,size=787448k,uid=1000
   indico-celery:
     <<: *indico-web
     command: /opt/indico/run_celery.sh
-    ports:
-      - "8888:8888"
     depends_on:
       - indico-redis
+    ports: []
     volumes: []
   indico-redis:
     image: redis
@@ -51,3 +63,4 @@ services:
       - indico-web
 volumes:
   static-files:
+  customization:

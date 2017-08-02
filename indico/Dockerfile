@@ -1,7 +1,5 @@
 FROM python:2.7
 
-ARG base_url
-
 ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin"
 ENV INDICO_CONFIG=/opt/indico/etc/indico.conf
 
@@ -31,6 +29,5 @@ RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/indico setup create_configs /opt/indico/etc
 
 COPY indico.conf /opt/indico/etc/indico.conf
-RUN sed -i "s/BASEURL/${base_url}/" /opt/indico/etc/indico.conf
 
 COPY uwsgi.ini /etc/uwsgi.ini
