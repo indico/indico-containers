@@ -30,6 +30,7 @@ services:
       - INDICO_LOGO_URL
       - REDIS_CACHE_URL=redis://indico-redis:6379/1
       - CELERY_BROKER=redis://indico-redis:6379/0
+      - SQLALCHEMY_DATABASE_URI
     volumes:
       - './data/archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
