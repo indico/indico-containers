@@ -31,12 +31,12 @@ services:
       - REDIS_CACHE_URL=redis://indico-redis:6379/1
       - CELERY_BROKER=redis://indico-redis:6379/0
     volumes:
-      - './data/archive:/opt/indico/archive:z'
-      - './data/log/nginx:/opt/indico/log/nginx:z'
-      - 'static-files:/opt/indico/static:z'
-      - 'customization:/opt/indico/custom:z'
+      - './data/archive:/opt/indico/archive'
+      - './data/log/nginx:/opt/indico/log/nginx'
+      - 'static-files:/opt/indico/static'
+      - 'customization:/opt/indico/custom'
     tmpfs:
-        - /opt/indico/tmp:rw,size=787448k,uid=1000
+      - /opt/indico/tmp
   indico-celery:
     <<: *indico-web
     command: /opt/indico/run_celery.sh
@@ -47,11 +47,11 @@ services:
   indico-redis:
     image: redis
   indico-postgres:
-    image: postgres:9.6
+    image: centos/postgresql-94-centos7
     environment:
-        - POSTGRES_USER=indico
-        - POSTGRES_PASSWORD=indicopass
-        - POSTGRES_DB=indico
+      - POSTGRESQL_USER=indico
+      - POSTGRESQL_PASSWORD=indicopass
+      - POSTGRESQL_DATABASE=indico
   indico-nginx:
     image: nginx
     ports:
