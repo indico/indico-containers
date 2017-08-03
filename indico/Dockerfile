@@ -5,8 +5,6 @@ ENV INDICO_CONFIG=/opt/indico/etc/indico.conf
 
 ARG pip="${INDICO_VIRTUALENV}/pip"
 
-RUN useradd indico -g users -u 1000
-
 RUN apt update
 RUN apt install -y postgresql
 RUN bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
@@ -15,7 +13,6 @@ RUN chown -R indico:users /opt/indico
 COPY run_indico.sh run_celery.sh /opt/indico/
 RUN chmod 755 /opt/indico/run_*.sh
 
-USER indico
 RUN virtualenv /opt/indico/.venv
 
 RUN ${pip} install pgcli

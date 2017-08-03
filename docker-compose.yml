@@ -53,12 +53,9 @@ services:
       - POSTGRESQL_PASSWORD=indicopass
       - POSTGRESQL_DATABASE=indico
   indico-nginx:
-    image: nginx
+    build: nginx
     ports:
       - "8080:8080"
-    command: bash -c "usermod -G users nginx && nginx -g 'daemon off;'"
-    volumes:
-      - './nginx.conf:/etc/nginx/conf.d/indico.conf'
     volumes_from:
       - indico-web
 volumes:
