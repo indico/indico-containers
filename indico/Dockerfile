@@ -8,7 +8,6 @@ ARG pip="${INDICO_VIRTUALENV}/pip"
 RUN apt update
 RUN apt install -y postgresql
 RUN bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
-RUN chown -R indico:users /opt/indico
 
 COPY run_indico.sh run_celery.sh /opt/indico/
 RUN chmod 755 /opt/indico/run_*.sh
