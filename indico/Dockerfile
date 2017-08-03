@@ -31,3 +31,7 @@ RUN ${INDICO_VIRTUALENV}/indico setup create_configs /opt/indico/etc
 COPY indico.conf /opt/indico/etc/indico.conf
 
 COPY uwsgi.ini /etc/uwsgi.ini
+
+# OpenShift runs containers using an arbitrarily assigned user ID for security reasons
+# This user is always in the root group so it is needed to grant privileges to group 0.
+RUN chgrp -R 0 /opt/indico && chmod -R g+rwX /opt/indico
