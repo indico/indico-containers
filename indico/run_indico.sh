@@ -18,8 +18,8 @@ psql -c 'SELECT * FROM events.events'
 
 if [ $? -eq 1 ]; then
     echo 'Preparing DB...'
-    echo 'CREATE EXTENSION unaccent;' | psql
-    echo 'CREATE EXTENSION pg_trgm;' | psql
+    echo 'CREATE EXTENSION unaccent;' | psql -U postgres
+    echo 'CREATE EXTENSION pg_trgm;' | psql -U postgres
     indico db prepare
 fi
 

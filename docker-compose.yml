@@ -53,6 +53,7 @@ services:
       - POSTGRESQL_USER=indico
       - POSTGRESQL_PASSWORD=indicopass
       - POSTGRESQL_DATABASE=indico
+      - POSTGRESQL_ADMIN_PASSWORD=indicopass
   indico-nginx:
     build: nginx
     ports:
