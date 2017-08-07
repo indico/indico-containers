@@ -11,7 +11,7 @@ services:
     links:
       - indico-redis
     environment:
-      - BASEURL=http://localhost:8080
+      - BASEURL=https://test-mvg.web.cern.ch
       - PGHOST=indico-postgres
       - PGUSER=indico
       - PGPASSWORD=indicopass
