@@ -31,6 +31,7 @@ services:
       - REDIS_CACHE_URL=redis://indico-redis:6379/1
       - CELERY_BROKER=redis://indico-redis:6379/0
       - SQLALCHEMY_DATABASE_URI
+      - C_FORCE_ROOT=true
     volumes:
       - './data/archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
@@ -47,6 +48,8 @@ services:
     volumes: []
   indico-redis:
     image: redis
+    volumes:
+      - './data/redis:/data'
   indico-postgres:
     image: centos/postgresql-94-centos7
     environment:
@@ -60,6 +63,8 @@ services:
       - "8080:8080"
     volumes_from:
       - indico-web
+    labels:
+      kompose.service.expose: "test-mvg.web.cern.ch"
 volumes:
   static-files:
   customization:
