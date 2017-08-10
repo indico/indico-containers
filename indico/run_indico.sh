@@ -2,8 +2,6 @@
 
 . /opt/indico/.venv/bin/activate
 
-export SQLALCHEMY_DATABASE_URI="postgresql://$PGUSER:$PGPASSWORD@$PGHOST/$PGDATABASE"
-
 psql -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE
 
 until [ $? -eq 0 ]; do
