@@ -455,6 +455,11 @@ objects:
               configMapKeyRef:
                 key: pgdatabase
                 name: settings
+          - name: PGPORT
+            valueFrom:
+              configMapKeyRef:
+                key: pgport
+                name: settings
           - name: SMTP_SERVER
             value: localhost
           - name: SMTP_PORT

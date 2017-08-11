@@ -16,10 +16,10 @@ if [ $? -eq 1 ]; then
     if [ $USE_DBOD == 'y' ]; then
         echo 'Using DBoD...'
         echo 'CREATE EXTENSION unaccent;' | psql
-        echo 'CREATE EXTENSION unaccent;' | psql
+        echo 'CREATE EXTENSION pg_trgm;' | psql
     else
         echo 'Using PostgreSQL container...'
-        echo 'CREATE EXTENSION pg_trgm;' | psql -U postgres
+        echo 'CREATE EXTENSION unaccent;' | psql -U postgres
         echo 'CREATE EXTENSION pg_trgm;' | psql -U postgres
     fi
     indico db prepare
