@@ -32,6 +32,7 @@ services:
       - REDIS_CACHE_URL=redis://indico-redis:6379/1
       - CELERY_BROKER=redis://indico-redis:6379/0
       - C_FORCE_ROOT=true
+      - USE_DBOD
     volumes:
       - './data/archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
