@@ -12,10 +12,11 @@ services:
       - indico-redis
     environment:
       - BASEURL=https://test-mvg.web.cern.ch
-      - PGHOST=indico-postgres
-      - PGUSER=indico
-      - PGPASSWORD=indicopass
-      - PGDATABASE=indico
+      - PGHOST
+      - PGUSER
+      - PGPASSWORD
+      - PGDATABASE
+      - PGPORT
       - SMTP_SERVER=localhost
       - SMTP_PORT=8025
       - SMTP_LOGIN
