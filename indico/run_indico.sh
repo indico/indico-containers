@@ -13,7 +13,7 @@ psql -c 'SELECT * FROM events.events'
 
 if [ $? -eq 1 ]; then
     echo 'Preparing DB...'
-    if [ $1 == 'y' ]; then
+    if [ $USE_DBOD == 'y' ]; then
         echo 'Using DBoD...'
         echo 'CREATE EXTENSION unaccent;' | psql
         echo 'CREATE EXTENSION unaccent;' | psql
