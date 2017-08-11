@@ -431,7 +431,7 @@ objects:
       spec:
         containers:
         - args:
-          - ./opt/indico/run_indico.sh "${USE_DBOD}"
+          - ./opt/indico/run_indico.sh
           env:
           - name: BASEURL
             value: https://test-mvg.web.cern.ch
