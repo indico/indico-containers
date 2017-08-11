@@ -14,15 +14,16 @@ $ docker-compose up indico-web
 ```
 
 
-## OpenShift
+### OpenShift
 
 ```sh
 $ oc create configmap settings --from-literal=pgdatabase=<db_name> --from-literal=pghost=<db_host>
---from-literal=pguser=<db_user> --from-literal=pgport=<db_port> --from-literal=pgpassword=<db_password>
+--from-literal=pguser=<db_user> --from-literal=pgport=<db_port>
+--from-literal=pgpassword=<db_password>
 
-cd openshift/
-./create.sh
+$ cd openshift/
+$ ./create.sh
 ```
 
-Keep in mind to set the `pghost` literal as `indico-postgres` and no port in case you wan to run the postgres container
+Keep in mind to set the `pghost` literal as `indico-postgres` and no port in case you want to run the postgres container
 instead of DBoD.
