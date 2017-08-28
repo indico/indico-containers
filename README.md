@@ -25,5 +25,10 @@ $ cd openshift/
 $ ./create.sh
 ```
 
-Keep in mind to set the `pghost` literal as `indico-postgres` and no port in case you want to run the postgres container
-instead of DBoD.
+In case you want to run the postgres container instead of DBoD (DataBase On Demand), keep in mind to set the `pghost`
+literal as `indico-postgres` and the rest of literals accordingly:
+
+```sh
+$ oc create configmap settings --from-literal=pgdatabase=indico --from-literal=pghost=indico-postgres
+--from-literal=pguser=indico --from-literal=pgport=5432
+--from-literal=pgpassword=indicopass
