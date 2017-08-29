@@ -7,7 +7,7 @@ services:
       - indico-redis
       - indico-celery
     ports:
-      - "8000:8000"
+      - "59999"  # tcp socket port
     links:
       - indico-redis
     environment:

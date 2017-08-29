@@ -310,7 +310,7 @@ objects:
           image: ' '
           name: indico-web
           ports:
-          - containerPort: 8000
+          - containerPort: 59999
           resources:
             limits:
               memory: 2Gi
@@ -584,9 +584,9 @@ objects:
     name: indico-web
   spec:
     ports:
-    - name: "8000"
-      port: 8000
-      targetPort: 8000
+    - name: "59999"
+      port: 59999
+      targetPort: 59999
     selector:
       io.kompose.service: indico-web
   status:
