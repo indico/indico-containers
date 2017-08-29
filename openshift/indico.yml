@@ -6,8 +6,8 @@ metadata:
     description: "Indico Openshift template"
     tags: "events, conferences"
 parameters:
-  - name: USE_DBOD
-    description: Whether DBoD will be used ('y' or 'n').
+  - name: USE_EXTERNAL_DB
+    description: Whether an external DB will be used ('y' or 'n').
     value: "y"
 objects:
 
@@ -486,8 +486,8 @@ objects:
           - name: SQLALCHEMY_DATABASE_URI
           - name: C_FORCE_ROOT
             value: "true"
-          - name: USE_DBOD
-            value: ${USE_DBOD}
+          - name: USE_EXTERNAL_DB
+            value: ${USE_EXTERNAL_DB}
           image: ' '
           name: indico-web
           ports:

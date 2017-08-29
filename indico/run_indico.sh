@@ -13,8 +13,8 @@ psql -c 'SELECT * FROM events.events'
 
 if [ $? -eq 1 ]; then
     echo 'Preparing DB...'
-    if [ $USE_DBOD == 'y' ]; then
-        echo 'Using DBoD...'
+    if [ $USE_EXTERNAL_DB == 'y' ]; then
+        echo 'Using external database...'
         echo 'CREATE EXTENSION unaccent;' | psql
         echo 'CREATE EXTENSION pg_trgm;' | psql
     else
