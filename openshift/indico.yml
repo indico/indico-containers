@@ -11,74 +11,351 @@ parameters:
     value: "y"
 objects:
 
+### Image streams
+
 - apiVersion: v1
-  kind: Service
+  kind: ImageStream
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-celery
-    name: indico-celery
-  spec:
-    ports:
-    - name: "8888"
-      port: 8888
-      targetPort: 8888
-    selector:
-      io.kompose.service: indico-celery
+      io.kompose.service: indico
+    name: indico
+  spec: {}
   status:
-    loadBalancer: {}
+    dockerImageRepository: ""
 
 - apiVersion: v1
-  kind: Service
+  kind: ImageStream
   metadata:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-nginx
     name: indico-nginx
-  spec:
-    ports:
-    - name: "8080"
-      port: 8080
-      targetPort: 8080
-    selector:
-      io.kompose.service: indico-nginx
+  spec: {}
   status:
-    loadBalancer: {}
+    dockerImageRepository: ""
 
 - apiVersion: v1
-  kind: Service
+  kind: ImageStream
   metadata:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-redis
     name: indico-redis
   spec:
-    clusterIP: None
-    ports:
-    - name: headless
-      port: 55555
-      targetPort: 0
-    selector:
-      io.kompose.service: indico-redis
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: redis
+      generation: null
+      importPolicy: {}
+      name: latest
   status:
-    loadBalancer: {}
+    dockerImageRepository: ""
+
+### Build configurations
 
 - apiVersion: v1
-  kind: Service
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-celery
+    name: indico-celery
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: indico:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: indico/
+      git:
+        ref: openshift
+        uri: https://github.com/mvidalgarcia/indico-docker.git
+      type: Git
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+  status:
+    lastVersion: 0
+
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-nginx
+    name: indico-nginx
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: indico-nginx:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: nginx/
+      git:
+        ref: openshift
+        uri: https://github.com/mvidalgarcia/indico-docker.git
+      type: Git
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+  status:
+    lastVersion: 0
+
+- apiVersion: v1
+  kind: BuildConfig
   metadata:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-web
     name: indico-web
   spec:
-    ports:
-    - name: "8000"
-      port: 8000
-      targetPort: 8000
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: indico:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: indico/
+      git:
+        ref: openshift
+        uri: https://github.com/mvidalgarcia/indico-docker.git
+      type: Git
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+  status:
+    lastVersion: 0
+
+### Persistent Volume claims
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-web-claim0
+    name: indico-web-claim0
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-web-claim1
+    name: indico-web-claim1
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: static-files
+    name: static-files
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: customization
+    name: customization
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-redis-claim0
+    name: indico-redis-claim0
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+
+### Deployment configurations
+
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-web
+    name: indico-web
+  spec:
+    replicas: 1
     selector:
       io.kompose.service: indico-web
-  status:
-    loadBalancer: {}
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: indico-web
+      spec:
+        containers:
+        - args:
+          - ./opt/indico/run_indico.sh
+          env:
+          - name: BASEURL
+            value: https://test-mvg.web.cern.ch
+          - name: PGHOST
+            valueFrom:
+              configMapKeyRef:
+                key: pghost
+                name: settings
+          - name: PGUSER
+            valueFrom:
+              configMapKeyRef:
+                key: pguser
+                name: settings
+          - name: PGPASSWORD
+            valueFrom:
+              configMapKeyRef:
+                key: pgpassword
+                name: settings
+          - name: PGDATABASE
+            valueFrom:
+              configMapKeyRef:
+                key: pgdatabase
+                name: settings
+          - name: PGPORT
+            valueFrom:
+              configMapKeyRef:
+                key: pgport
+                name: settings
+          - name: SMTP_SERVER
+            value: localhost
+          - name: SMTP_PORT
+            value: "8025"
+          - name: SMTP_LOGIN
+          - name: SMTP_PASSWORD
+          - name: SMTP_USE_TLS
+            value: "no"
+          - name: INDICO_DEFAULT_TIMEZONE
+            value: UTC
+          - name: INDICO_DEFAULT_LOCALE
+          - name: INDICO_ROUTE_OLD_URLS
+            value: "False"
+          - name: INDICO_CHECKIN_APP_CLIENT_ID
+          - name: INDICO_CUSTOMIZATION_DIR
+            value: /opt/indico/custom
+          - name: INDICO_CUSTOMIZATION_DEBUG
+            value: "False"
+          - name: INDICO_LOGO_URL
+          - name: REDIS_CACHE_URL
+            value: redis://indico-redis:6379/1
+          - name: CELERY_BROKER
+            value: redis://indico-redis:6379/0
+          - name: SQLALCHEMY_DATABASE_URI
+          - name: C_FORCE_ROOT
+            value: "true"
+          - name: USE_EXTERNAL_DB
+            value: ${USE_EXTERNAL_DB}
+          image: ' '
+          name: indico-web
+          ports:
+          - containerPort: 8000
+          resources:
+            limits:
+              memory: 2Gi
+            requests:
+              memory: 1Gi
+          volumeMounts:
+          - mountPath: /opt/indico/archive
+            name: indico-web-claim0
+          - mountPath: /opt/indico/log/nginx
+            name: indico-web-claim1
+          - mountPath: /opt/indico/static
+            name: static-files
+          - mountPath: /opt/indico/custom
+            name: customization
+          - mountPath: /opt/indico/tmp
+            name: indico-web-tmpfs0
+        restartPolicy: Always
+        volumes:
+        - name: indico-web-claim0
+          persistentVolumeClaim:
+            claimName: indico-web-claim0
+        - name: indico-web-claim1
+          persistentVolumeClaim:
+            claimName: indico-web-claim1
+        - name: static-files
+          persistentVolumeClaim:
+            claimName: static-files
+        - name: customization
+          persistentVolumeClaim:
+            claimName: customization
+        - emptyDir:
+            medium: Memory
+          name: indico-web-tmpfs0
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - indico-web
+        from:
+          kind: ImageStreamTag
+          name: indico:latest
+      type: ImageChange
+  status: {}
 
 - apiVersion: v1
   kind: DeploymentConfig
@@ -186,90 +463,6 @@ objects:
   status: {}
 
 - apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico
-    name: indico
-  spec: {}
-  status:
-    dockerImageRepository: ""
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-celery
-    name: indico-celery
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      contextDir: indico/
-      git:
-        ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
-      type: Git
-    strategy:
-      dockerStrategy: {}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-  status:
-    lastVersion: 0
-
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec: {}
-  status:
-    dockerImageRepository: ""
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico-nginx:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      contextDir: nginx/
-      git:
-        ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
-      type: Git
-    strategy:
-      dockerStrategy: {}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-  status:
-    lastVersion: 0
-
-- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     creationTimestamp: null
@@ -292,6 +485,11 @@ objects:
         containers:
         - image: ' '
           name: indico-nginx
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              memory: 512Mi
           ports:
           - containerPort: 8080
           resources: {}
@@ -375,199 +573,76 @@ objects:
       type: ImageChange
   status: {}
 
+### Services
+
 - apiVersion: v1
-  kind: ImageStream
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-web
+    name: indico-web
+  spec:
+    ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 8000
+    selector:
+      io.kompose.service: indico-web
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-celery
+    name: indico-celery
+  spec:
+    ports:
+    - name: "8888"
+      port: 8888
+      targetPort: 8888
+    selector:
+      io.kompose.service: indico-celery
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-nginx
+    name: indico-nginx
+  spec:
+    ports:
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+    selector:
+      io.kompose.service: indico-nginx
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: Service
   metadata:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-redis
     name: indico-redis
   spec:
-    tags:
-    - annotations: null
-      from:
-        kind: DockerImage
-        name: redis
-      generation: null
-      importPolicy: {}
-      name: latest
-  status:
-    dockerImageRepository: ""
-
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-redis-claim0
-    name: indico-redis-claim0
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
-
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web
-    name: indico-web
-  spec:
-    replicas: 1
+    clusterIP: None
+    ports:
+    - name: headless
+      port: 55555
+      targetPort: 0
     selector:
-      io.kompose.service: indico-web
-    strategy:
-      resources: {}
-      type: Recreate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          io.kompose.service: indico-web
-      spec:
-        containers:
-        - args:
-          - ./opt/indico/run_indico.sh
-          env:
-          - name: BASEURL
-            value: https://test-mvg.web.cern.ch
-          - name: PGHOST
-            valueFrom:
-              configMapKeyRef:
-                key: pghost
-                name: settings
-          - name: PGUSER
-            valueFrom:
-              configMapKeyRef:
-                key: pguser
-                name: settings
-          - name: PGPASSWORD
-            valueFrom:
-              configMapKeyRef:
-                key: pgpassword
-                name: settings
-          - name: PGDATABASE
-            valueFrom:
-              configMapKeyRef:
-                key: pgdatabase
-                name: settings
-          - name: PGPORT
-            valueFrom:
-              configMapKeyRef:
-                key: pgport
-                name: settings
-          - name: SMTP_SERVER
-            value: localhost
-          - name: SMTP_PORT
-            value: "8025"
-          - name: SMTP_LOGIN
-          - name: SMTP_PASSWORD
-          - name: SMTP_USE_TLS
-            value: "no"
-          - name: INDICO_DEFAULT_TIMEZONE
-            value: UTC
-          - name: INDICO_DEFAULT_LOCALE
-          - name: INDICO_ROUTE_OLD_URLS
-            value: "False"
-          - name: INDICO_CHECKIN_APP_CLIENT_ID
-          - name: INDICO_CUSTOMIZATION_DIR
-            value: /opt/indico/custom
-          - name: INDICO_CUSTOMIZATION_DEBUG
-            value: "False"
-          - name: INDICO_LOGO_URL
-          - name: REDIS_CACHE_URL
-            value: redis://indico-redis:6379/1
-          - name: CELERY_BROKER
-            value: redis://indico-redis:6379/0
-          - name: SQLALCHEMY_DATABASE_URI
-          - name: C_FORCE_ROOT
-            value: "true"
-          - name: USE_EXTERNAL_DB
-            value: ${USE_EXTERNAL_DB}
-          image: ' '
-          name: indico-web
-          ports:
-          - containerPort: 8000
-          resources:
-            limits:
-              memory: 1Gi
-            requests:
-              memory: 512Mi
-          volumeMounts:
-          - mountPath: /opt/indico/archive
-            name: indico-web-claim0
-          - mountPath: /opt/indico/log/nginx
-            name: indico-web-claim1
-          - mountPath: /opt/indico/static
-            name: static-files
-          - mountPath: /opt/indico/custom
-            name: customization
-          - mountPath: /opt/indico/tmp
-            name: indico-web-tmpfs0
-        restartPolicy: Always
-        volumes:
-        - name: indico-web-claim0
-          persistentVolumeClaim:
-            claimName: indico-web-claim0
-        - name: indico-web-claim1
-          persistentVolumeClaim:
-            claimName: indico-web-claim1
-        - name: static-files
-          persistentVolumeClaim:
-            claimName: static-files
-        - name: customization
-          persistentVolumeClaim:
-            claimName: customization
-        - emptyDir:
-            medium: Memory
-          name: indico-web-tmpfs0
-    test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - indico-web
-        from:
-          kind: ImageStreamTag
-          name: indico:latest
-      type: ImageChange
-  status: {}
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web
-    name: indico-web
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      contextDir: indico/
-      git:
-        ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
-      type: Git
-    strategy:
-      dockerStrategy: {}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
+      io.kompose.service: indico-redis
   status:
-    lastVersion: 0
+    loadBalancer: {}
 
 ### Routes
 
@@ -591,62 +666,3 @@ objects:
       insecureEdgeTerminationPolicy: Redirect
   status:
     ingress: null
-
-### Persistent Volume claims
-
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web-claim0
-    name: indico-web-claim0
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web-claim1
-    name: indico-web-claim1
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: static-files
-    name: static-files
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: customization
-    name: customization
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
