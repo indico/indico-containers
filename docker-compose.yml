@@ -11,7 +11,7 @@ services:
     links:
       - indico-redis
     environment:
-      - BASEURL=https://test-mvg.web.cern.ch
+      - BASEURL
       - PGHOST
       - PGUSER
       - PGPASSWORD

@@ -253,7 +253,10 @@ objects:
           - ./opt/indico/run_indico.sh
           env:
           - name: BASEURL
-            value: https://test-mvg.web.cern.ch
+            valueFrom:
+              configMapKeyRef:
+                key: baseurl
+                name: settings
           - name: PGHOST
             valueFrom:
               configMapKeyRef:
@@ -382,7 +385,10 @@ objects:
           - ./opt/indico/run_celery.sh
           env:
           - name: BASEURL
-            value: https://test-mvg.web.cern.ch
+            valueFrom:
+              configMapKeyRef:
+                key: baseurl
+                name: settings
           - name: PGHOST
             valueFrom:
               configMapKeyRef:
