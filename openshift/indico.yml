@@ -61,8 +61,8 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-celery
-    name: indico-celery
+      io.kompose.service: indico-web
+    name: indico
   spec:
     nodeSelector: null
     output:
@@ -70,7 +70,13 @@ objects:
         kind: ImageStreamTag
         name: indico:latest
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: 400m
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
     runPolicy: Serial
     source:
       contextDir: indico/
@@ -105,43 +111,6 @@ objects:
     runPolicy: Serial
     source:
       contextDir: nginx/
-      git:
-        ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
-      type: Git
-    strategy:
-      dockerStrategy: {}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-  status:
-    lastVersion: 0
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web
-    name: indico-web
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico:latest
-    postCommit: {}
-    resources:
-      limits:
-        cpu: 400m
-        memory: 2Gi
-      requests:
-        cpu: 100m
-        memory: 512Mi
-    runPolicy: Serial
-    source:
-      contextDir: indico/
       git:
         ref: openshift
         uri: https://github.com/mvidalgarcia/indico-docker.git
