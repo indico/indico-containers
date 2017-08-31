@@ -132,7 +132,13 @@ objects:
         kind: ImageStreamTag
         name: indico:latest
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: 400m
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
     runPolicy: Serial
     source:
       contextDir: indico/
@@ -493,8 +499,10 @@ objects:
           name: indico-nginx
           resources:
             limits:
+              cpu: 400m
               memory: 1Gi
             requests:
+              cpu: 100m
               memory: 512Mi
           ports:
           - containerPort: 8080
