@@ -6,7 +6,7 @@ ENV INDICO_CONFIG=/opt/indico/etc/indico.conf
 ARG pip="${INDICO_VIRTUALENV}/pip"
 
 RUN apt update
-RUN apt install -y postgresql texlive-full
+RUN apt install -y postgresql
 RUN bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
 
 COPY run_indico.sh run_celery.sh /opt/indico/
