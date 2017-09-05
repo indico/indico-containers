@@ -283,9 +283,11 @@ objects:
           - containerPort: 59999
           resources:
             limits:
+              cpu: 400m
               memory: 2Gi
             requests:
-              memory: 1Gi
+              cpu: 100m
+              memory: 512Mi
           volumeMounts:
           - mountPath: /opt/indico/archive
             name: indico-web-claim0
@@ -297,6 +299,13 @@ objects:
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
+          readinessProbe:
+            tcpSocket:
+              port: 59999
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -468,6 +477,15 @@ objects:
             name: static-files
           - mountPath: /opt/indico/custom
             name: customization
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
