@@ -216,7 +216,6 @@ objects:
       io.kompose.service: indico-web
     strategy:
       resources: {}
-      type: Recreate
     template:
       metadata:
         creationTimestamp: null
@@ -258,23 +257,16 @@ objects:
                 key: pgport
                 name: settings
           - name: SMTP_SERVER
-            value: localhost
           - name: SMTP_PORT
-            value: "8025"
           - name: SMTP_LOGIN
           - name: SMTP_PASSWORD
           - name: SMTP_USE_TLS
-            value: "no"
           - name: INDICO_DEFAULT_TIMEZONE
-            value: UTC
           - name: INDICO_DEFAULT_LOCALE
           - name: INDICO_ROUTE_OLD_URLS
-            value: "False"
           - name: INDICO_CHECKIN_APP_CLIENT_ID
           - name: INDICO_CUSTOMIZATION_DIR
-            value: /opt/indico/custom
           - name: INDICO_CUSTOMIZATION_DEBUG
-            value: "False"
           - name: INDICO_LOGO_URL
           - name: REDIS_CACHE_URL
             value: redis://indico-redis:6379/1
@@ -348,7 +340,6 @@ objects:
       io.kompose.service: indico-celery
     strategy:
       resources: {}
-      type: Recreate
     template:
       metadata:
         creationTimestamp: null
@@ -390,23 +381,16 @@ objects:
                 key: pgport
                 name: settings
           - name: SMTP_SERVER
-            value: localhost
           - name: SMTP_PORT
-            value: "8025"
           - name: SMTP_LOGIN
           - name: SMTP_PASSWORD
           - name: SMTP_USE_TLS
-            value: "no"
           - name: INDICO_DEFAULT_TIMEZONE
-            value: UTC
           - name: INDICO_DEFAULT_LOCALE
           - name: INDICO_ROUTE_OLD_URLS
-            value: "False"
           - name: INDICO_CHECKIN_APP_CLIENT_ID
           - name: INDICO_CUSTOMIZATION_DIR
-            value: /opt/indico/custom
           - name: INDICO_CUSTOMIZATION_DEBUG
-            value: "False"
           - name: INDICO_LOGO_URL
           - name: REDIS_CACHE_URL
             value: redis://indico-redis:6379/1
@@ -456,7 +440,6 @@ objects:
       io.kompose.service: indico-nginx
     strategy:
       resources: {}
-      type: Recreate
     template:
       metadata:
         creationTimestamp: null
