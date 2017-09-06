@@ -208,22 +208,27 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-web
-    name: indico-web
+      indico.web.service: indico-web
+      io.kompose.service: indico-nginx
+    name: indico
   spec:
     replicas: 1
     selector:
-      io.kompose.service: indico-web
+      indico.web.service: indico-web
+      io.kompose.service: indico-nginx
     strategy:
       resources: {}
     template:
       metadata:
         creationTimestamp: null
         labels:
-          io.kompose.service: indico-web
+          indico.web.service: indico-web
+          io.kompose.service: indico-nginx
       spec:
         containers:
-        - args:
+        - name: indico-web
+          image: ' '
+          args:
           - ./opt/indico/run_indico.sh
           env:
           - name: BASEURL
@@ -277,8 +282,6 @@ objects:
             value: "true"
           - name: USE_EXTERNAL_DB
             value: ${USE_EXTERNAL_DB}
-          image: ' '
-          name: indico-web
           ports:
           - containerPort: 59999
           resources:
@@ -299,9 +302,32 @@ objects:
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
+        - name: indico-nginx
+          image: ' '
+          resources:
+            limits:
+              cpu: 400m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          ports:
+          - containerPort: 8080
+          resources: {}
+          volumeMounts:
+          - mountPath: /opt/indico/archive
+            name: indico-web-claim0
+          - mountPath: /opt/indico/log/nginx
+            name: indico-web-claim1
+          - mountPath: /opt/indico/static
+            name: static-files
+          - mountPath: /opt/indico/custom
+            name: customization
           readinessProbe:
-            tcpSocket:
-              port: 59999
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
             timeoutSeconds: 1
             periodSeconds: 10
             successThreshold: 1
@@ -326,15 +352,24 @@ objects:
     test: false
     triggers:
     - type: ConfigChange
-    - imageChangeParams:
+    - type: ImageChange
+      imageChangeParams:
         automatic: true
         containerNames:
         - indico-web
         from:
           kind: ImageStreamTag
           name: indico:latest
-      type: ImageChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - indico-nginx
+        from:
+          kind: ImageStreamTag
+          name: indico-nginx:latest
   status: {}
+
 
 - apiVersion: v1
   kind: DeploymentConfig
@@ -426,91 +461,14 @@ objects:
     test: false
     triggers:
     - type: ConfigChange
-    - imageChangeParams:
+    - type: ImageChange
+      imageChangeParams:
         automatic: true
         containerNames:
         - indico-celery
         from:
           kind: ImageStreamTag
           name: indico:latest
-      type: ImageChange
-  status: {}
-
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec:
-    replicas: 1
-    selector:
-      io.kompose.service: indico-nginx
-    strategy:
-      resources: {}
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          io.kompose.service: indico-nginx
-      spec:
-        containers:
-        - image: ' '
-          name: indico-nginx
-          resources:
-            limits:
-              cpu: 400m
-              memory: 1Gi
-            requests:
-              cpu: 100m
-              memory: 512Mi
-          ports:
-          - containerPort: 8080
-          resources: {}
-          volumeMounts:
-          - mountPath: /opt/indico/archive
-            name: indico-web-claim0
-          - mountPath: /opt/indico/log/nginx
-            name: indico-web-claim1
-          - mountPath: /opt/indico/static
-            name: static-files
-          - mountPath: /opt/indico/custom
-            name: customization
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-        restartPolicy: Always
-        volumes:
-        - name: indico-web-claim0
-          persistentVolumeClaim:
-            claimName: indico-web-claim0
-        - name: indico-web-claim1
-          persistentVolumeClaim:
-            claimName: indico-web-claim1
-        - name: static-files
-          persistentVolumeClaim:
-            claimName: static-files
-        - name: customization
-          persistentVolumeClaim:
-            claimName: customization
-    test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - indico-nginx
-        from:
-          kind: ImageStreamTag
-          name: indico-nginx:latest
-      type: ImageChange
   status: {}
 
 - apiVersion: v1
@@ -547,14 +505,14 @@ objects:
     test: false
     triggers:
     - type: ConfigChange
-    - imageChangeParams:
+    - type: ImageChange
+      imageChangeParams:
         automatic: true
         containerNames:
         - indico-redis
         from:
           kind: ImageStreamTag
           name: indico-redis:latest
-      type: ImageChange
   status: {}
 
 ### Services
@@ -564,7 +522,7 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-web
+      indico.web.service: indico-web
     name: indico-web
   spec:
     ports:
@@ -572,7 +530,7 @@ objects:
       port: 59999
       targetPort: 59999
     selector:
-      io.kompose.service: indico-web
+      indico.web.service: indico-web
   status:
     loadBalancer: {}
 
