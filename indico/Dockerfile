@@ -22,7 +22,7 @@ RUN ${pip} install --pre indico
 RUN ${pip} install uwsgi
 
 RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
-RUN ${INDICO_VIRTUALENV}/indico setup create_configs /opt/indico/etc
+RUN ${INDICO_VIRTUALENV}/indico setup create_logging_config /opt/indico/etc
 
 COPY indico.conf /opt/indico/etc/indico.conf
 RUN ln -s /opt/indico/etc/indico.conf /etc/indico.conf

@@ -82,7 +82,7 @@ objects:
       contextDir: indico/
       git:
         ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
+        uri: https://github.com/meluru/indico-docker.git
       type: Git
     strategy:
       dockerStrategy: {}
@@ -113,7 +113,7 @@ objects:
       contextDir: nginx/
       git:
         ref: openshift
-        uri: https://github.com/mvidalgarcia/indico-docker.git
+        uri: https://github.com/meluru/indico-docker.git
       type: Git
     strategy:
       dockerStrategy: {}
@@ -323,15 +323,6 @@ objects:
             name: static-files
           - mountPath: /opt/indico/custom
             name: customization
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -596,7 +587,7 @@ objects:
       io.kompose.service: indico-nginx
     name: indico-nginx
   spec:
-    host: test-mvg.web.cern.ch
+    host: test-ansible.web.cern.ch
     port:
       targetPort: 8080
     to:
