@@ -159,6 +159,21 @@ objects:
         storage: 100Mi
   status: {}
 
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    name: eos-volume
+    annotations:
+      volume.beta.kubernetes.io/storage-class: eos
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 0
+  status: {}
+
 ### Deployment configurations
 
 - apiVersion: v1
@@ -279,6 +294,8 @@ objects:
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
+          - mountPath: /eos
+            name: eos
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -293,6 +310,9 @@ objects:
         - name: customization
           persistentVolumeClaim:
             claimName: customization
+        - name: eos
+          persistentVolumeClaim:
+            claimName: eos-volume
         - emptyDir:
             medium: Memory
           name: indico-web-tmpfs0
@@ -308,7 +328,6 @@ objects:
           kind: ImageStreamTag
           name: indico:latest
   status: {}
-
 
 - apiVersion: v1
   kind: DeploymentConfig
