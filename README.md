@@ -32,3 +32,7 @@ literal as `indico-postgres` and the rest of literals accordingly:
 $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=indico
 --from-literal=pghost=indico-postgres --from-literal=pguser=indico --from-literal=pgport=5432
 --from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
+
+If you want to use EOS storage you need to provide eos user and password in secrets
+$ oc create secret generic eos-credentials --type=eos.cern.ch/credentials --from-literal=keytab-user=<keytab_user>
+--from-literal=keytab-pwd=<keytab_pwd>
