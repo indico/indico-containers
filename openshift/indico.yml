@@ -71,7 +71,7 @@ objects:
       contextDir: indico/
       git:
         ref: openshift
-        uri: https://github.com/mic4ael/indico-docker.git
+        uri: https://github.com/indico/indico-containers.git
       type: Git
     strategy:
       dockerStrategy: {}
