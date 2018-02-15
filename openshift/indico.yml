@@ -505,3 +505,24 @@ objects:
       insecureEdgeTerminationPolicy: Redirect
   status:
     ingress: null
+
+
+### PodAutoscaler
+### in order to make it work the cluster needs to be run with --metrics flag (oc cluster --metrics)
+### it is also necessary to have hawkular openshift agent installed within the cluster
+### http://www.hawkular.org/blog/2017/03/25/collecting-application-metrics-openshift.html
+
+- apiVersion: extensions/v1beta1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: indico-web-autoscaler
+  spec:
+    scaleRef:
+      kind: DeploymentConfig
+      name: indico
+      apiVersion: v1
+      subresource: scale
+    minReplicas: 1
+    maxReplicas: 5
+    cpuUtilization:
+      targetPercentage: 80
