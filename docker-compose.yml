@@ -64,8 +64,6 @@ services:
       - "8080:8080"
     volumes_from:
       - indico-web
-    labels:
-      kompose.service.expose: "test-ansible.web.cern.ch"
 volumes:
   static-files:
   customization:

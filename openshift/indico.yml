@@ -587,7 +587,6 @@ objects:
       io.kompose.service: indico-nginx
     name: indico-nginx
   spec:
-    host: test-ansible.web.cern.ch
     port:
       targetPort: 8080
     to:
