@@ -29,17 +29,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec: {}
-  status:
-    dockerImageRepository: ""
-
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    labels:
       io.kompose.service: indico-redis
     name: indico-redis
   spec:
@@ -82,38 +71,7 @@ objects:
       contextDir: indico/
       git:
         ref: openshift
-        uri: https://github.com/meluru/indico-docker.git
-      type: Git
-    strategy:
-      dockerStrategy: {}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-  status:
-    lastVersion: 0
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico-nginx:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      contextDir: nginx/
-      git:
-        ref: openshift
-        uri: https://github.com/meluru/indico-docker.git
+        uri: https://github.com/mic4ael/indico-docker.git
       type: Git
     strategy:
       dockerStrategy: {}
@@ -209,13 +167,11 @@ objects:
     creationTimestamp: null
     labels:
       indico.web.service: indico-web
-      io.kompose.service: indico-nginx
     name: indico
   spec:
     replicas: 1
     selector:
       indico.web.service: indico-web
-      io.kompose.service: indico-nginx
     strategy:
       resources: {}
     template:
@@ -223,7 +179,6 @@ objects:
         creationTimestamp: null
         labels:
           indico.web.service: indico-web
-          io.kompose.service: indico-nginx
       spec:
         containers:
         - name: indico-web
@@ -286,43 +241,20 @@ objects:
           - containerPort: 59999
           resources:
             limits:
-              cpu: 400m
+              cpu: 800m
               memory: 2Gi
             requests:
-              cpu: 100m
+              cpu: 400m
               memory: 512Mi
           volumeMounts:
           - mountPath: /opt/indico/archive
             name: indico-web-claim0
-          - mountPath: /opt/indico/log/nginx
-            name: indico-web-claim1
           - mountPath: /opt/indico/static
             name: static-files
           - mountPath: /opt/indico/custom
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
-        - name: indico-nginx
-          image: ' '
-          resources:
-            limits:
-              cpu: 400m
-              memory: 1Gi
-            requests:
-              cpu: 100m
-              memory: 512Mi
-          ports:
-          - containerPort: 8080
-          resources: {}
-          volumeMounts:
-          - mountPath: /opt/indico/archive
-            name: indico-web-claim0
-          - mountPath: /opt/indico/log/nginx
-            name: indico-web-claim1
-          - mountPath: /opt/indico/static
-            name: static-files
-          - mountPath: /opt/indico/custom
-            name: customization
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -351,14 +283,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: indico:latest
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - indico-nginx
-        from:
-          kind: ImageStreamTag
-          name: indico-nginx:latest
   status: {}
 
 
@@ -547,23 +471,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
-  spec:
-    ports:
-    - name: "8080"
-      port: 8080
-      targetPort: 8080
-    selector:
-      io.kompose.service: indico-nginx
-  status:
-    loadBalancer: {}
-
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
       io.kompose.service: indico-redis
     name: indico-redis
   spec:
@@ -584,14 +491,14 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      io.kompose.service: indico-nginx
-    name: indico-nginx
+      io.kompose.service: indico-web
+    name: indico-web
   spec:
     port:
-      targetPort: 8080
+      targetPort: 59999
     to:
       kind: Service
-      name: indico-nginx
+      name: indico-web
       weight: null
     tls:
       termination: edge
