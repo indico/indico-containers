@@ -422,6 +422,16 @@ objects:
         containers:
         - image: ' '
           name: indico-redis
+          livenessProbe:
+            exec:
+              command:
+              - redis-cli
+              - PING
+          readinessProbe:
+            exec:
+              command:
+              - redis-cli
+              - PING
           resources: {}
           volumeMounts:
           - mountPath: /data
