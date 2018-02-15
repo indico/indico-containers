@@ -185,6 +185,20 @@ objects:
           image: ' '
           args:
           - ./opt/indico/run_indico.sh
+          livenessProbe:
+            exec:
+              command:
+              - curl
+              - 127.0.0.1:59999/contact
+            initialDelaySeconds: 120
+            timeoutSeconds: 20
+          readinessProbe:
+            exec:
+              command:
+              - curl
+              - 127.0.0.1:59999/contact
+            initialDelaySeconds: 60
+            timeoutSeconds: 20
           env:
           - name: BASEURL
             valueFrom:
