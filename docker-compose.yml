@@ -33,6 +33,7 @@ services:
       - CELERY_BROKER=redis://indico-redis:6379/0
       - C_FORCE_ROOT=true
       - USE_EXTERNAL_DB
+      - INDICO_STORAGE_DICT
     volumes:
       - './data/archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
