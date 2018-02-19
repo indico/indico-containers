@@ -230,6 +230,11 @@ objects:
               configMapKeyRef:
                 key: pgport
                 name: settings
+          - name: SENTRY_DSN
+            valueFrom:
+              configMapKeyRef:
+                key: sentrydsn
+                name: settings
           - name: SMTP_SERVER
           - name: SMTP_PORT
           - name: SMTP_LOGIN
@@ -352,6 +357,11 @@ objects:
             valueFrom:
               configMapKeyRef:
                 key: pgport
+                name: settings
+          - name: SENTRY_DSN
+            valueFrom:
+              configMapKeyRef:
+                key: sentrydsn
                 name: settings
           - name: SMTP_SERVER
           - name: SMTP_PORT
