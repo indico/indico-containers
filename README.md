@@ -19,7 +19,7 @@ $ docker-compose up indico-web
 ```sh
 $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=<db_name>
 --from-literal=pghost=<db_host> --from-literal=pguser=<db_user> --from-literal=pgport=<db_port>
---from-literal=pgpassword=<db_password> --from-literal=sentrydsn=<sentrydsn>
+--from-literal=pgpassword=<db_password> --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
 
 $ cd openshift/
 $ ./create.sh
@@ -31,4 +31,4 @@ literal as `indico-postgres` and the rest of literals accordingly:
 ```sh
 $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=indico
 --from-literal=pghost=indico-postgres --from-literal=pguser=indico --from-literal=pgport=5432
---from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn>
+--from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
