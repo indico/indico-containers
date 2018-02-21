@@ -235,6 +235,11 @@ objects:
               configMapKeyRef:
                 key: sentrydsn
                 name: settings
+          - name: SECRET_KEY
+            valueFrom:
+              configMapKeyRef:
+                key: secretkey
+                name: settings
           - name: SMTP_SERVER
           - name: SMTP_PORT
           - name: SMTP_LOGIN
@@ -362,6 +367,11 @@ objects:
             valueFrom:
               configMapKeyRef:
                 key: sentrydsn
+                name: settings
+          - name: SECRET_KEY
+            valueFrom:
+              configMapKeyRef:
+                key: secretkey
                 name: settings
           - name: SMTP_SERVER
           - name: SMTP_PORT
