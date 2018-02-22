@@ -20,7 +20,7 @@ $ docker-compose up indico-web
 $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=<db_name>
 --from-literal=pghost=<db_host> --from-literal=pguser=<db_user> --from-literal=pgport=<db_port>
 --from-literal=pgpassword=<db_password> --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
---from-literal=storage=<storage>
+--from-literal=storage=<storage> --from-literal=attachmentstorage=<attachment_storage>
 
 
 $ cd openshift/
@@ -34,7 +34,7 @@ literal as `indico-postgres` and the rest of literals accordingly:
 $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=indico
 --from-literal=pghost=indico-postgres --from-literal=pguser=indico --from-literal=pgport=5432
 --from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
---from-literal=storage=<storage>
+--from-literal=storage=<storage> --from-literal=attachmentstorage=<attachment_storage>
 
 If you want to use EOS storage you need to:
 
@@ -45,7 +45,9 @@ $ oc create secret generic eos-credentials --type=eos.cern.ch/credentials --from
 --from-literal=keytab-pwd=<keytab_pwd>
 ```
 
-- add path to EOS in storage (settings configmap). For example:
+- add path to EOS in storage (settings configmap), for example:
 ```
 {"eos" : "fs:/eos/path/to/folder"}
 ```
+
+- set attachment storage to one of the defined storages, for example "eos"
