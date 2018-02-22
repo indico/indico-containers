@@ -4,7 +4,7 @@ ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/ind
 
 ARG pip="${INDICO_VIRTUALENV}/pip"
 
-RUN apt update && apt install -y postgresql && bash -c 'mkdir -p /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+RUN apt-get update && apt-get install -y postgresql && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
 
 COPY run_indico.sh run_celery.sh /opt/indico/
 RUN chmod 755 /opt/indico/run_*.sh
@@ -31,4 +31,4 @@ COPY uwsgi.ini /etc/uwsgi.ini
 
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.
-RUN chgrp -R 0 /opt/indico && chmod -R g+rwX /opt/indico
+RUN chgrp -R 0 /opt/indico
