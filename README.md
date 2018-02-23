@@ -45,9 +45,9 @@ $ oc create secret generic eos-credentials --type=eos.cern.ch/credentials --from
 --from-literal=keytab-pwd=<keytab_pwd>
 ```
 
-- add path to EOS in storage (settings configmap), for example:
+- add path to EOS in storage dict (settings configmap), for example:
 ```
-{"eos" : "fs:/eos/path/to/folder"}
+{'eos' : 'fs:/eos/path/to/folder'}
 ```
 
 - set attachment storage to one of the defined storages, for example "eos"
