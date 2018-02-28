@@ -1,0 +1,16 @@
+version: 1
+
+root:
+  level: INFO
+  handlers: [stderr]
+
+loggers: {}
+
+handlers:
+  stderr:
+    class: logging.StreamHandler
+    formatter: default
+
+formatters:
+  default:
+    format: '%(asctime)s  %(levelname)-7s  %(request_id)s  %(name)-25s %(message)s'
