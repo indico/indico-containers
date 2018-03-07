@@ -38,16 +38,8 @@ $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=
 
 If you want to use EOS storage you need to:
 
-- provide eos user and password in secrets
-
-```sh
-$ oc create secret generic eos-credentials --type=eos.cern.ch/credentials --from-literal=keytab-user=<keytab_user>
---from-literal=keytab-pwd=<keytab_pwd>
-```
-
 - add path to EOS in storage dict (settings configmap), for example:
 ```
 {'eos' : 'fs:/eos/path/to/folder'}
 ```
-
 - set attachment storage to one of the defined storages, for example "eos"

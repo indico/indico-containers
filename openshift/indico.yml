@@ -160,21 +160,6 @@ objects:
         storage: 100Mi
   status: {}
 
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    name: eos-volume
-    annotations:
-      volume.beta.kubernetes.io/storage-class: eos
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 0
-  status: {}
-
 ### Deployment configurations
 
 - apiVersion: v1
@@ -305,43 +290,6 @@ objects:
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
-          - mountPath: /eos
-            name: eos
-        - env:
-          - name: KEYTAB_USER
-            valueFrom:
-              secretKeyRef:
-                key: keytab-user
-                name: eos-credentials
-          - name: KEYTAB_PWD
-            valueFrom:
-              secretKeyRef:
-                key: keytab-pwd
-                name: eos-credentials
-          image: gitlab-registry.cern.ch/paas-tools/eosclient-openshift
-          imagePullPolicy: Always
-          name: eosclient-openshift
-          readinessProbe:
-            exec:
-              command:
-              - bash
-              - -c
-              - stat "${EOS_CREDENTIALS_PATH}/store/uid$(id -u).krb5"
-            failureThreshold: 3
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: 100m
-              memory: 20Mi
-            requests:
-              cpu: 10m
-              memory: 10Mi
-          volumeMounts:
-          - mountPath: /var/run/eosd/credentials
-            name: eos
-            subPath: .eoscredentials
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -356,9 +304,6 @@ objects:
         - name: customization
           persistentVolumeClaim:
             claimName: customization
-        - name: eos
-          persistentVolumeClaim:
-            claimName: eos-volume
         - emptyDir:
             medium: Memory
           name: indico-web-tmpfs0
