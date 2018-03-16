@@ -4,7 +4,10 @@ ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/ind
 
 ARG pip="${INDICO_VIRTUALENV}/pip"
 
-RUN apt-get update && apt-get install -y postgresql && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+RUN apt-get update && apt-get install -y postgresql texlive-xetex && bash -c 'mkdir -p --mode=775 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+
+## Uncomment to install tex
+# RUN apt-get install -y texlive-xetex
 
 COPY run_indico.sh run_celery.sh /opt/indico/
 RUN chmod 755 /opt/indico/run_*.sh
