@@ -11,10 +11,10 @@ ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 USER root
 
 RUN yum update -y;
-RUN yum install -y epel-release python-pip;
+RUN yum install -y epel-release python-pip texlive-xetex;
 RUN yum localinstall -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 RUN yum update -y
-RUN yum install -y postgresql96 && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+RUN yum install -y postgresql96 && bash -c 'mkdir -p --mode=775 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
 
 RUN if [ -n "${use_xrootd}" ]; then \
     yum update -y && \
