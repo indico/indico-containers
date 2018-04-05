@@ -1,6 +1,6 @@
 FROM nginx
 
-RUN apt update && apt install -y curl wget vim httpie htop iputils-ping python-pip
+RUN apt-get clean && apt-get update && apt-get install -y curl wget vim httpie htop iputils-ping python-pip
 RUN rm /etc/nginx/conf.d/default.conf
 COPY indico.conf /etc/nginx/conf.d/indico.conf
 

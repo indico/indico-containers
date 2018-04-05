@@ -1,0 +1,73 @@
+version: "2"
+services:
+  indico-web: &indico-web
+    build: indico
+    command: /opt/indico/run_indico.sh
+    depends_on:
+      - indico-redis
+      - indico-celery
+    ports:
+      - "59999"  # tcp socket port
+    links:
+      - indico-redis
+    environment:
+      - SECRET_KEY=someVeryLongStringOfAtLeast40Characters
+      - PGHOST=indico-postgres
+      - PGUSER=indico
+      - PGPASSWORD=indicopass
+      - PGDATABASE=indico
+      - PGPORT=5432
+      - BASEURL=https://indico.example.com
+      - SMTP_SERVER=172.19.0.1
+      - SMTP_PORT=25
+      - SMTP_LOGIN
+      - SMTP_PASSWORD
+      - SMTP_USE_TLS
+      - INDICO_DEFAULT_TIMEZONE=Europe/Berlin
+#      - INDICO_DEFAULT_LOCALE
+#      - INDICO_ROUTE_OLD_URLS
+#      - INDICO_CHECKIN_APP_CLIENT_ID
+#      - INDICO_CUSTOMIZATION_DIR
+#      - INDICO_CUSTOMIZATION_DEBUG
+      - INDICO_LOGO_URL=https://indico.example.com/icon/icon.png
+      - REDIS_CACHE_URL=redis://indico-redis:6379/1
+      - CELERY_BROKER=redis://indico-redis:6379/0
+      - C_FORCE_ROOT=true
+#      - USE_EXTERNAL_DB
+      - INDICO_STORAGE_DICT="fs\:/opt/indico/archive"
+    volumes:
+      - './data/archive:/opt/indico/archive'
+      - './data/log/nginx:/opt/indico/log/nginx'
+      - 'static-files:/opt/indico/static'
+      - 'customization:/opt/indico/custom'
+    tmpfs:
+      - /opt/indico/tmp
+  indico-celery:
+    <<: *indico-web
+    command: /opt/indico/run_celery.sh
+    depends_on:
+      - indico-redis
+    ports: []
+    volumes: []
+  indico-redis:
+    image: redis
+    volumes:
+      - './data/redis:/data'
+  indico-postgres:
+    image: centos/postgresql-96-centos7
+    volumes:
+      - './data/postgresql:/var/lib/pgsql/data'
+    environment:
+      - POSTGRESQL_USER=indico
+      - POSTGRESQL_PASSWORD=indicopass
+      - POSTGRESQL_DATABASE=indico
+      - POSTGRESQL_ADMIN_PASSWORD=indicopass
+  indico-nginx:
+    build: nginx
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - indico-web
+volumes:
+  static-files:
+  customization:
