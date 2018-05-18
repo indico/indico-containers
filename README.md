@@ -35,11 +35,14 @@ $ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=
 --from-literal=pghost=indico-postgres --from-literal=pguser=indico --from-literal=pgport=5432
 --from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
 --from-literal=storage=<storage> --from-literal=attachmentstorage=<attachment_storage>
+```
 
 If you want to use EOS storage you need to:
 
 - add path to EOS in storage dict (settings configmap), for example:
+
 ```
-{'eos' : 'fs:/eos/path/to/folder'}
+    {'eos' : 'fs:/eos/path/to/folder'}
 ```
+
 - set attachment storage to one of the defined storages, for example "eos"
