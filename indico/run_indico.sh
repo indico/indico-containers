@@ -9,7 +9,7 @@ until [ $? -eq 0 ]; do
     psql $PGDATABASE -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE
 done
 
-psql -c 'SELECT * FROM events.events'
+psql -c 'SELECT COUNT(*) FROM events.events'
 
 if [ $? -eq 1 ]; then
     echo 'Preparing DB...'
@@ -19,8 +19,8 @@ if [ $? -eq 1 ]; then
         echo 'CREATE EXTENSION pg_trgm;' | psql $PGDATABASE
     else
         echo 'Using PostgreSQL container...'
-        echo 'CREATE EXTENSION unaccent;' | psql -U postgres
-        echo 'CREATE EXTENSION pg_trgm;' | psql -U postgres
+        echo 'CREATE EXTENSION unaccent;' | psql $PGDATABASE -U postgres
+        echo 'CREATE EXTENSION pg_trgm;' | psql $PGDATABASE -U postgres
     fi
     indico db prepare
 fi
