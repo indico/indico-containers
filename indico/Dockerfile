@@ -16,7 +16,7 @@ RUN virtualenv /opt/indico/.venv
 RUN ${pip} install pgcli
 
 RUN ${pip} install --upgrade pip && \
-    ${pip} install --pre indico && \
+    ${pip} install indico==2.1 && \
     ${pip} install uwsgi && \
     ${pip} install raven
 
