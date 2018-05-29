@@ -393,6 +393,21 @@ objects:
                 configMapKeyRef:
                   key: attachmentstorage
                   name: settings
+          - name: AUTH_PROVIDERS
+            valueFrom:
+                configMapKeyRef:
+                  key: authproviders
+                  name: settings
+          - name: IDENTITY_PROVIDERS
+            valueFrom:
+                configMapKeyRef:
+                  key: identityproviders
+                  name: settings
+          - name: LOCAL_IDENTITIES
+            valueFrom:
+                configMapKeyRef:
+                  key: localidentities
+                  name: settings
           - name: SMTP_SERVER
           - name: SMTP_PORT
           - name: SMTP_LOGIN
