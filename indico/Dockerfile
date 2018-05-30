@@ -20,6 +20,8 @@ RUN ${pip} install --upgrade pip && \
     ${pip} install uwsgi && \
     ${pip} install raven
 
+RUN ${pip} install git+https://github.com/indico/flask-multipass.git
+
 RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/indico setup create_logging_config /opt/indico/etc
 
