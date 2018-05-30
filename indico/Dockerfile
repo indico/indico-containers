@@ -7,6 +7,7 @@ ARG pip="${INDICO_VIRTUALENV}/pip"
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/postgresql.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 RUN apt-get update && apt-get install -y postgresql-9.6 && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+RUN apt-get install -y vim less
 
 COPY run_indico.sh run_celery.sh /opt/indico/
 RUN chmod 755 /opt/indico/run_*.sh
