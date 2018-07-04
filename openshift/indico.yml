@@ -256,6 +256,9 @@ objects:
           - name: SMTP_LOGIN
           - name: SMTP_PASSWORD
           - name: SMTP_USE_TLS
+          - name: INDICO_SUPPORT_EMAIL
+          - name: INDICO_PUBLIC_SUPPORT_EMAIL
+          - name: INDICO_NO_REPLY_EMAIL
           - name: INDICO_DEFAULT_TIMEZONE
           - name: INDICO_DEFAULT_LOCALE
           - name: INDICO_ROUTE_OLD_URLS
