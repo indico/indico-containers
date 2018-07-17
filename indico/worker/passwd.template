@@ -1,0 +1,1 @@
+indico:x:${USER_ID}:${GROUP_ID}:Indico:${HOME}:/bin/bash

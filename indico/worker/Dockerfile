@@ -1,15 +1,22 @@
-FROM python:2.7-stretch
+FROM centos:centos7
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
 ARG pip="${INDICO_VIRTUALENV}/pip"
 
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/postgresql.list
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN apt-get update && apt-get install -y postgresql-9.6 && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
-RUN apt-get install -y vim less
+USER root
 
-COPY run_indico.sh run_celery.sh /opt/indico/
+RUN yum update -y;
+RUN yum install -y epel-release python-pip;
+RUN yum localinstall -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+RUN yum update -y
+RUN yum install -y postgresql96 && bash -c 'mkdir -p --mode=774 /opt/indico/{etc,tmp,log,assets,cache,archive,static}'
+
+RUN yum install -y vim less python-virtualenv nss_wrapper gcc gettext
+RUN yum clean all
+
+COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
+COPY passwd.template /root
 RUN chmod 755 /opt/indico/run_*.sh
 
 RUN virtualenv /opt/indico/.venv
