@@ -7,4 +7,4 @@ export LD_PRELOAD=libnss_wrapper.so
 export NSS_WRAPPER_PASSWD=/tmp/passwd
 export NSS_WRAPPER_GROUP=/etc/group
 
-export KRB5CCNAME=${KRB_CACHE_DIR}
+export KRB5CCNAME=FILE:${KRB_CACHE_DIR}/user.krb5

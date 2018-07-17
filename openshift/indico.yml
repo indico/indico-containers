@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: indico-template
+  name: indico
   annotations:
     description: "Indico Openshift template"
     tags: "events, conferences"
@@ -247,22 +247,23 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      indico.web.service: indico-web
+      io.kompose.service: indico-web
     name: indico
   spec:
     replicas: 1
     selector:
-      indico.web.service: indico-web
+      io.kompose.service: indico-web
     strategy:
       resources: {}
     template:
       metadata:
         creationTimestamp: null
         labels:
-          indico.web.service: indico-web
+          io.kompose.service: indico-web
       spec:
         containers:
         - name: krbclient
+          image: ' '
           env:
           - name: KEYTAB_USER
           - name: KEYTAB_PWD
@@ -641,7 +642,7 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      indico.web.service: indico-web
+      io.kompose.service: indico-web
     name: indico-web
   spec:
     ports:
@@ -649,7 +650,7 @@ objects:
       port: 59999
       targetPort: 59999
     selector:
-      indico.web.service: indico-web
+      io.kompose.service: indico-web
   status:
     loadBalancer: {}
 
