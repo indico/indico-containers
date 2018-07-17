@@ -26,8 +26,5 @@ if [ $? -eq 1 ]; then
     indico db prepare
 fi
 
-rm -rf /opt/indico/static/*
-cp -rL /opt/indico/htdocs /opt/indico/static/
-
 echo 'Starting Indico...'
 uwsgi /etc/uwsgi.ini

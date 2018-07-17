@@ -54,6 +54,43 @@ objects:
   kind: BuildConfig
   metadata:
     creationTimestamp: null
+    name: indico-static
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: indico-static:latest
+    postCommit: {}
+    resources:
+      limits:
+        cpu: 400m
+        memory: 2Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+    runPolicy: Serial
+    source:
+      contextDir: indico/static/
+      git:
+        ref: master
+        uri: https://github.com/indico/indico-containers.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        noCache: true
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+  status:
+    lastVersion: 0
+
+
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
     labels:
       io.kompose.service: indico-web
     name: indico-worker
@@ -150,21 +187,6 @@ objects:
     labels:
       io.kompose.service: indico-web-claim1
     name: indico-web-claim1
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 100Mi
-  status: {}
-
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: static-files
-    name: static-files
   spec:
     accessModes:
     - ReadWriteOnce
@@ -359,8 +381,6 @@ objects:
           volumeMounts:
           - mountPath: /opt/indico/archive
             name: indico-web-claim0
-          - mountPath: /opt/indico/static
-            name: static-files
           - mountPath: /opt/indico/custom
             name: customization
           - mountPath: /opt/indico/tmp
@@ -376,9 +396,6 @@ objects:
         - name: indico-web-claim1
           persistentVolumeClaim:
             claimName: indico-web-claim1
-        - name: static-files
-          persistentVolumeClaim:
-            claimName: static-files
         - name: customization
           persistentVolumeClaim:
             claimName: customization
@@ -539,6 +556,33 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
+    labels:
+      io.kompose.service: indico-static
+    name: indico-static
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: indico-static
+    template:
+      metadata:
+        labels:
+          io.kompose.service: indico-static
+
+      spec:
+        containers:
+        - name: indico-static
+          image: ' '
+          resources:
+            limits:
+              cpu: 800m
+              memory: 1Gi
+            requests:
+              cpu: 400m
+              memory: 512Mi
+
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-redis
@@ -641,6 +685,24 @@ objects:
       targetPort: 0
     selector:
       io.kompose.service: indico-redis
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: indico-static
+    name: indico-static
+  spec:
+    clusterIP: None
+    ports:
+    - name: headless
+      port: 8080
+      targetPort: 8080
+    selector:
+      io.kompose.service: indico-static
   status:
     loadBalancer: {}
 
