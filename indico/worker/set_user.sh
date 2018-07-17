@@ -6,3 +6,5 @@ envsubst < ${HOME}/passwd.template >> /tmp/passwd
 export LD_PRELOAD=libnss_wrapper.so
 export NSS_WRAPPER_PASSWD=/tmp/passwd
 export NSS_WRAPPER_GROUP=/etc/group
+
+export KRB5CCNAME=${KRB_CACHE_DIR}
