@@ -24,7 +24,7 @@ RUN yum install -y vim less python-virtualenv nss_wrapper gcc gettext
 RUN yum clean all
 
 COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
-COPY passwd.template /root
+COPY passwd.template /tmp/
 RUN chmod 755 /opt/indico/run_*.sh
 
 RUN if [ -z "${use_xrootd}" ]; then \
