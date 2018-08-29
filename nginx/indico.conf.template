@@ -1,9 +1,9 @@
 server {
-  listen 8080;
-  listen [::]:8080;
+  listen ${SERVICE_PORT};
+  listen [::]:${SERVICE_PORT};
 
-  access_log            /opt/indico/log/nginx/access.log combined;
-  error_log             /opt/indico/log/nginx/error.log;
+  access_log            /dev/stdout combined;
+  error_log             /dev/stdout info;
 
   location /.xsf/indico/ {
     internal;
@@ -15,9 +15,8 @@ server {
     access_log off;
   }
 
-  location ~ ^/(ihelp|css|images|js|static(?!/plugins|/assets|/themes|/custom))(/.*)$ {
-    alias /opt/indico/static/htdocs/$1$2;
-    access_log off;
+  location ~ ^/(ihelp|css|images|js|(static/fonts))(/.*)$ {
+    proxy_pass  http://indico-static:8080;
   }
 
   location /robots.txt {
@@ -31,13 +30,12 @@ server {
   }
 
   location / {
-    proxy_pass        http://indico-web:59999;
-    proxy_set_header  host $host;
+    root /var/empty/nginx;
+    proxy_pass http://indico-web:59999;
+    proxy_set_header  Host $host:$server_port;
     proxy_set_header  X-Real-IP $http_cf_connecting_ip;
     proxy_set_header  X-Forwarded-For $http_cf_connecting_ip;
     proxy_set_header  X-Forwarded-Proto $http_x_forwarded_proto;
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
     client_max_body_size 1G;
   }
 
