@@ -58,3 +58,6 @@ VOLUME ${KRB_CACHE_DIR}
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.
 RUN chgrp -R 0 /opt/indico
+
+ENV USE_XROOTD ${use_xrootd}
+ENV USE_PROXY ${use_proxy}

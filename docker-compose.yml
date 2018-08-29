@@ -10,37 +10,18 @@ services:
       - "59999"  # tcp socket port
     links:
       - indico-redis
-    environment:
-      - BASEURL
-      - PGHOST
-      - PGUSER
-      - PGPASSWORD
-      - PGDATABASE
-      - PGPORT
-      - SMTP_SERVER
-      - SMTP_PORT
-      - SMTP_LOGIN
-      - SMTP_PASSWORD
-      - SMTP_USE_TLS
-      - INDICO_DEFAULT_TIMEZONE
-      - INDICO_DEFAULT_LOCALE
-      - INDICO_ROUTE_OLD_URLS
-      - INDICO_CHECKIN_APP_CLIENT_ID
-      - INDICO_CUSTOMIZATION_DIR
-      - INDICO_CUSTOMIZATION_DEBUG
-      - INDICO_LOGO_URL
-      - REDIS_CACHE_URL=redis://indico-redis:6379/1
-      - CELERY_BROKER=redis://indico-redis:6379/0
-      - C_FORCE_ROOT=true
-      - USE_EXTERNAL_DB
-      - INDICO_STORAGE_DICT
+      - indico-postgres
+    env_file:
+      - indico.env
     volumes:
       - './data/archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
-      - 'static-files:/opt/indico/static'
       - 'customization:/opt/indico/custom'
+      - 'static-files:/opt/indico/static'
     tmpfs:
       - /opt/indico/tmp
+  indico-static:
+    build: indico/static
   indico-celery:
     <<: *indico-web
     command: /opt/indico/run_celery.sh
@@ -53,7 +34,7 @@ services:
     volumes:
       - './data/redis:/data'
   indico-postgres:
-    image: centos/postgresql-94-centos7
+    image: centos/postgresql-96-centos7
     environment:
       - POSTGRESQL_USER=indico
       - POSTGRESQL_PASSWORD=indicopass
@@ -61,8 +42,13 @@ services:
       - POSTGRESQL_ADMIN_PASSWORD=indicopass
   indico-nginx:
     build: nginx
+    env_file:
+      - indico.env
     ports:
       - "8080:8080"
+    links:
+      - indico-web
+      - indico-static
     volumes_from:
       - indico-web
 volumes:
