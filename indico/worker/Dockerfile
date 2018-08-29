@@ -5,13 +5,15 @@ ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/ind
 ARG KRB_CACHE_DIR='/var/run/keytab'
 ARG pip="${INDICO_VIRTUALENV}/pip"
 ARG use_xrootd=""
+ARG tag="latest"
 
 ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 
 USER root
 
 RUN yum update -y;
-RUN yum install -y epel-release python-pip texlive-xetex;
+RUN yum install -y epel-release;
+RUN yum install -y jq texlive-xetex
 RUN yum localinstall -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 RUN yum update -y
 RUN yum install -y postgresql96
@@ -34,12 +36,19 @@ else \
     virtualenv /opt/indico/.venv --system-site-packages; \
 fi
 
-RUN ${pip} install pgcli
 
 RUN ${pip} install --upgrade pip && \
-    ${pip} install indico==2.1.2 && \
+    ${pip} install pgcli && \
     ${pip} install uwsgi && \
     ${pip} install raven
+
+
+RUN if [ "$tag" = "latest" ]; then \
+    ${pip} install indico; \
+else \
+    ${pip} install indico==${tag}; \
+fi;
+
 
 RUN if [ -n "${use_xrootd}" ]; then \
     ${pip} install indico-plugin-storage-xrootd==1.0; \
