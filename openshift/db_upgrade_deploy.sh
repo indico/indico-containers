@@ -39,10 +39,15 @@ spec:
           initialDelaySeconds: 5
           timeoutSeconds: 20
         env:
-        - name: BASEURL
+        - name: SERVICE_HOSTNAME
           valueFrom:
             configMapKeyRef:
-              key: baseurl
+              key: servicehost
+              name: settings
+        - name: SERVICE_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: serviceport
               name: settings
         - name: PGHOST
           valueFrom:

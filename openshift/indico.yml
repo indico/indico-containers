@@ -296,10 +296,15 @@ objects:
             initialDelaySeconds: 60
             timeoutSeconds: 20
           env:
-          - name: BASEURL
+          - name: SERVICE_HOSTNAME
             valueFrom:
               configMapKeyRef:
-                key: baseurl
+                key: servicehost
+                name: settings
+          - name: SERVICE_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: serviceport
                 name: settings
           - name: PGHOST
             valueFrom:
@@ -442,10 +447,15 @@ objects:
         - args:
           - ./opt/indico/run_celery.sh
           env:
-          - name: BASEURL
+          - name: SERVICE_HOSTNAME
             valueFrom:
               configMapKeyRef:
-                key: baseurl
+                key: servicehost
+                name: settings
+          - name: SERVICE_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: serviceport
                 name: settings
           - name: PGHOST
             valueFrom:
