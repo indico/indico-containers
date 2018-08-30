@@ -2,15 +2,12 @@
 
 [![Build Status](https://www.travis-ci.org/indico/indico-containers.svg?branch=master)](https://www.travis-ci.org/indico/indico-containers)
 
+Simple Docker config to try Indico out.
+
+**ATTENTION: DO NOT use this in production as it is. There are important things missing, such as HTTPS support.**
+
 ```sh
 $ docker-compose up
-```
-
-To run Indico with your own database (prevents running postgres container), make sure you properly configure the
-environment variables for `indico-web` service in `docker-compose.yml` and run the following command instead:
-
-```sh
-$ docker-compose up indico-web
 ```
 
 
