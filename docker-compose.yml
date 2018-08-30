@@ -1,7 +1,7 @@
 version: "2"
 services:
   indico-web: &indico-web
-    image: indico:latest
+    image: getindico/indico:latest
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis
