@@ -8,9 +8,9 @@ services:
       - indico-celery
     ports:
       - "59999"  # tcp socket port
-    links:
-      - indico-redis
-      - indico-postgres
+    networks:
+        - backend
+        - frontend
     env_file:
       - indico.env
     volumes:
@@ -22,19 +22,27 @@ services:
       - /opt/indico/tmp
   indico-static:
     build: indico/static
+    networks:
+      - frontend
   indico-celery:
     <<: *indico-web
-    command: /opt/indico/run_celery.sh
+    networks:
+      - backend
     depends_on:
       - indico-redis
+    command: /opt/indico/run_celery.sh
     ports: []
     volumes: []
   indico-redis:
     image: redis
+    networks:
+      - backend
     volumes:
       - './data/redis:/data'
   indico-postgres:
     image: centos/postgresql-96-centos7
+    networks:
+      - backend
     environment:
       - POSTGRESQL_USER=indico
       - POSTGRESQL_PASSWORD=indicopass
@@ -42,15 +50,17 @@ services:
       - POSTGRESQL_ADMIN_PASSWORD=indicopass
   indico-nginx:
     build: nginx
+    networks:
+      - frontend
     env_file:
       - indico.env
     ports:
       - "8080:8080"
-    links:
-      - indico-web
-      - indico-static
     volumes_from:
       - indico-web
 volumes:
   static-files:
   customization:
+networks:
+  backend: {}
+  frontend: {}
