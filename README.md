@@ -1,6 +1,6 @@
 # indico-docker
 
-Simple Docker config to try Indico out.
+[![Build Status](https://www.travis-ci.org/indico/indico-containers.svg?branch=master)](https://www.travis-ci.org/indico/indico-containers)
 
 ```sh
 $ docker-compose up
