@@ -39,6 +39,11 @@ spec:
           initialDelaySeconds: 5
           timeoutSeconds: 20
         env:
+        - name: SERVICE_PROTOCOL
+          valueFrom:
+            configMapKeyRef:
+              key: serviceprotocol
+              name: settings
         - name: SERVICE_HOSTNAME
           valueFrom:
             configMapKeyRef:
@@ -164,6 +169,6 @@ indico db upgrade
 EOF
 
 oc patch svc indico-web -p '{"spec": {"selector": {"indico.web.service": "indico-web"}}}'
-echo "$HPA_DEFINITION" | oc create -f -
+#echo "$HPA_DEFINITION" | oc create -f -
 oc delete dc/indico-tmp
 oc tag indico:previous -d

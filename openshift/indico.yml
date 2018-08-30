@@ -296,6 +296,11 @@ objects:
             initialDelaySeconds: 60
             timeoutSeconds: 20
           env:
+          - name: SERVICE_PROTOCOL
+            valueFrom:
+              configMapKeyRef:
+                key: serviceprotocol
+                name: settings
           - name: SERVICE_HOSTNAME
             valueFrom:
               configMapKeyRef:
@@ -447,6 +452,11 @@ objects:
         - args:
           - ./opt/indico/run_celery.sh
           env:
+          - name: SERVICE_PROTOCOL
+            valueFrom:
+              configMapKeyRef:
+                key: serviceprotocol
+                name: settings
           - name: SERVICE_HOSTNAME
             valueFrom:
               configMapKeyRef:
