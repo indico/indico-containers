@@ -89,6 +89,16 @@ spec:
             configMapKeyRef:
               key: secretkey
               name: settings
+        - name: INDICO_STORAGE_DICT
+          valueFrom:
+              configMapKeyRef:
+                key: storage
+                name: settings
+        - name: ATTACHMENT_STORAGE
+          valueFrom:
+              configMapKeyRef:
+                key: attachmentstorage
+                name: settings
         - name: SMTP_SERVER
         - name: SMTP_PORT
         - name: SMTP_LOGIN
