@@ -26,9 +26,7 @@ fi
 RUN yum install -y vim less python-virtualenv nss_wrapper gcc gettext
 RUN yum clean all
 
-COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
 COPY passwd.template /tmp/
-RUN chmod 755 /opt/indico/run_*.sh
 
 RUN if [ -z "${use_xrootd}" ]; then \
     virtualenv /opt/indico/.venv; \
@@ -68,6 +66,9 @@ VOLUME ${KRB_CACHE_DIR}
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.
 RUN chgrp -R 0 /opt/indico
+
+COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
+RUN chmod 755 /opt/indico/run_*.sh
 
 ENV USE_XROOTD ${use_xrootd}
 ENV USE_PROXY ${use_proxy}
