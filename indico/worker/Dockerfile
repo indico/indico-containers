@@ -13,7 +13,7 @@ USER root
 
 RUN yum update -y;
 RUN yum install -y epel-release;
-RUN yum install -y jq texlive-xetex
+RUN yum install -y texlive-xetex
 RUN yum localinstall -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 RUN yum update -y
 RUN yum install -y postgresql96
