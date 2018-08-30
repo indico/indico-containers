@@ -4,7 +4,7 @@
 # sed ...
 
 URL=http://localhost:8080/category/0/statistics
-TIMEOUT=60
+TIMEOUT=120
 
 # make sure the cluster is down
 docker-compose down
