@@ -2,11 +2,21 @@
 
 set -e
 
-HPA_DEFINITION=$(oc get hpa/indico-web-autoscaler -o yaml --export)
+source ./indico.env
+IMAGE_FULL_PATH=${IMAGE_REPO}/${IMAGE_NAME}
 
-oc delete hpa/indico-web-autoscaler
-oc tag indico:latest indico:previous
-oc create -f - <<'EOF'
+VERSION=$1
+
+#HPA_DEFINITION=$(oc get hpa/indico-web-autoscaler -o yaml --export)
+
+#oc delete hpa/indico-web-autoscaler
+
+# mark previous 'stable' as 'previous'
+oc tag $IMAGE_FULL_PATH:stable $IMAGE_NAME:previous
+# import stable image from Docker
+oc import-image $IMAGE_NAME:stable --from=docker.io/getindico/indico:$VERSION --confirm
+
+oc create -f - <<EOF
 apiVersion: v1
 kind: DeploymentConfig
 metadata:
@@ -28,7 +38,7 @@ spec:
     spec:
       containers:
       - name: indico-web
-        image: ' '
+        image: $IMAGE_PULL_REPO/$IMAGE_NAME:stable
         args:
         - ./opt/indico/run_indico.sh
         readinessProbe:
@@ -164,16 +174,19 @@ spec:
       - indico-web
       from:
         kind: ImageStreamTag
-        name: indico:previous
+        name: indico:stable
+status: {}
 status: {}
 EOF
 
 oc rollout latest dc/indico-tmp && oc rollout status dc/indico-tmp
 oc patch svc indico-web -p '{"spec": {"selector": {"indico.web.service": "indico-web-tmp"}}}'
-oc scale dc/indico --replicas=1
-oc start-build indico --wait && oc rollout status dc/indico
 
-oc rsh dc/indico /bin/sh <<'EOF'
+oc scale dc/indico --replicas=1
+oc rollout latest dc/indico && oc rollout status dc/indico
+
+oc rsh -c indico-web dc/indico /bin/sh <<'EOF'
+. /opt/indico/set_user.sh
 . /opt/indico/.venv/bin/activate
 indico db upgrade
 EOF
@@ -182,3 +195,4 @@ oc patch svc indico-web -p '{"spec": {"selector": {"indico.web.service": "indico
 #echo "$HPA_DEFINITION" | oc create -f -
 oc delete dc/indico-tmp
 oc tag indico:previous -d
+oc patch svc indico-web -p "{\"metadata\": {\"annotations\": {\"indico-version\": \"${VERSION}\"}}}"
