@@ -1,0 +1,12 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - sudo pip install yq
+  - cp indico.env.sample indico.env
+
+script:
+  - yq '. | .services["indico-web"].build = "./indico/worker"' docker-compose.yml > docker-compose.local.yml
+  - docker-compose -f docker-compose.local.yml build
+  - ./test.sh
