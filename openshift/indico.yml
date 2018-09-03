@@ -434,7 +434,7 @@ objects:
         - indico-web
         from:
           kind: ImageStreamTag
-          name: indico-web:latest
+          name: indico-worker:stable
   status: {}
 
 - apiVersion: v1
@@ -579,7 +579,7 @@ objects:
         - indico-celery
         from:
           kind: ImageStreamTag
-          name: indico:latest
+          name: indico-worker:stable
   status: {}
 
 - apiVersion: v1
