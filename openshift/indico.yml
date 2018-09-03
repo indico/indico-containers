@@ -257,7 +257,7 @@ objects:
     creationTimestamp: null
     labels:
       io.kompose.service: indico-web
-    name: indico
+    name: indico-web
   spec:
     replicas: 1
     selector:
