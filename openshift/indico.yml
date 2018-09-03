@@ -773,18 +773,17 @@ objects:
 ### it is also necessary to have hawkular openshift agent installed within the cluster
 ### http://www.hawkular.org/blog/2017/03/25/collecting-application-metrics-openshift.html
 
-# Enable PodAutoscaler as soon as all the issues has been fixed in Openshift
-# - apiVersion: autoscaling/v1
-#   kind: HorizontalPodAutoscaler
-#   metadata:
-#     name: indico-web-autoscaler
-#   spec:
-#     scaleTargetRef:
-#       kind: DeploymentConfig
-#       name: indico
-#       apiVersion: v1
-#       subresource: scale
-#     minReplicas: 1
-#     maxReplicas: 5
-#     cpuUtilization:
-#       targetPercentage: 80
+- apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: indico-web-autoscaler
+  spec:
+    scaleTargetRef:
+      kind: DeploymentConfig
+      name: indico-web
+      apiVersion: v1
+      subresource: scale
+    minReplicas: 1
+    maxReplicas: 5
+    cpuUtilization:
+      targetPercentage: 80
