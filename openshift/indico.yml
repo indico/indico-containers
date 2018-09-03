@@ -108,7 +108,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: indico-worker:latest
+        name: indico-worker:stable
     postCommit: {}
     resources:
       limits:
@@ -407,7 +407,6 @@ objects:
             name: indico-web-tmpfs0
           - mountPath: /var/run/keytab
             name: krbclient
-
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -597,7 +596,6 @@ objects:
       metadata:
         labels:
           io.kompose.service: indico-static
-
       spec:
         containers:
         - name: indico-static
