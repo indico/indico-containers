@@ -435,6 +435,14 @@ objects:
         from:
           kind: ImageStreamTag
           name: indico-worker:stable
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - krbclient
+        from:
+          kind: ImageStreamTag
+          name: indico-krbclient:latest
   status: {}
 
 - apiVersion: v1
