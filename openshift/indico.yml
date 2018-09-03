@@ -26,6 +26,15 @@ objects:
   kind: ImageStream
   metadata:
     creationTimestamp: null
+    name: indico-static
+  spec: {}
+  status:
+    dockerImageRepository: ""
+
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
     name: indico-krbclient
   spec: {}
   status:
