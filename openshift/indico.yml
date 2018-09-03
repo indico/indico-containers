@@ -607,6 +607,17 @@ objects:
             requests:
               cpu: 400m
               memory: 512Mi
+    test: false
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - indico-static
+        from:
+          kind: ImageStreamTag
+          name: indico-static:latest
 
 - apiVersion: v1
   kind: DeploymentConfig
