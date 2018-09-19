@@ -16,6 +16,11 @@ oc tag $IMAGE_FULL_PATH:stable $IMAGE_NAME:previous
 # import stable image from Docker
 oc import-image $IMAGE_NAME:stable --from=docker.io/getindico/indico:$VERSION --confirm
 
+# if we need a custom image (e.g. for plugins)
+if [ -n "$CUSTOM_IMAGE_NAME" ]; then
+  oc start-build indico-worker --build-arg plugins=${PLUGINS} --wait;
+fi
+
 oc create -f - <<EOF
 apiVersion: v1
 kind: DeploymentConfig
@@ -38,7 +43,7 @@ spec:
     spec:
       containers:
       - name: indico-web
-        image: $IMAGE_PULL_REPO/$IMAGE_NAME:stable
+        image: $IMAGE_PULL_REPO/${CUSTOM_IMAGE_NAME:-$IMAGE_NAME}:stable
         args:
         - ./opt/indico/run_indico.sh
         readinessProbe:

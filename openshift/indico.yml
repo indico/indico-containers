@@ -19,8 +19,13 @@ objects:
     creationTimestamp: null
     name: indico-worker
   spec: {}
-  status:
-    dockerImageRepository: ""
+
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: indico-worker-custom
+  spec: {}
 
 - apiVersion: v1
   kind: ImageStream
@@ -28,8 +33,6 @@ objects:
     creationTimestamp: null
     name: indico-static
   spec: {}
-  status:
-    dockerImageRepository: ""
 
 - apiVersion: v1
   kind: ImageStream
@@ -37,8 +40,6 @@ objects:
     creationTimestamp: null
     name: indico-krbclient
   spec: {}
-  status:
-    dockerImageRepository: ""
 
 - apiVersion: v1
   kind: ImageStream
@@ -54,8 +55,6 @@ objects:
       generation: null
       importPolicy: {}
       name: latest
-  status:
-    dockerImageRepository: ""
 
 ### Build configurations
 
@@ -108,7 +107,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: indico-worker:stable
+        name: 'indico-worker-custom:stable'
     postCommit: {}
     resources:
       limits:
@@ -119,18 +118,30 @@ objects:
         memory: 512Mi
     runPolicy: Serial
     source:
-      contextDir: indico/worker/
-      git:
-        ref: master
-        uri: https://github.com/indico/indico-containers.git
-      type: Git
+      dockerfile: |
+        # the FROM line is ignored
+        FROM getindico/indico:2.1.3
+
+        ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin"
+        ARG pip="${INDICO_VIRTUALENV}/pip"
+        ARG plugins=""
+
+        USER root
+        RUN IFS=',' read -ra PLUGIN_ARRAY <<< "$plugins"; \
+        for plugin in "${PLUGIN_ARRAY[@]}"; do \
+            ${pip} install $plugin; \
+        done
+      type: Dockerfile
     strategy:
       dockerStrategy:
+        buildArgs:
+          - name: use_xrootd
+            value: 'yes'
+        from:
+          kind: ImageStreamTag
+          name: 'indico:stable'
         noCache: true
       type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
   status:
     lastVersion: 0
 
@@ -434,7 +445,7 @@ objects:
         - indico-web
         from:
           kind: ImageStreamTag
-          name: indico-worker:stable
+          name: indico-worker-custom:stable
     - type: ImageChange
       imageChangeParams:
         automatic: true
@@ -587,7 +598,7 @@ objects:
         - indico-celery
         from:
           kind: ImageStreamTag
-          name: indico-worker:stable
+          name: indico-worker-custom:stable
   status: {}
 
 - apiVersion: v1
