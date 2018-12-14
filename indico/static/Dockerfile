@@ -6,8 +6,6 @@ RUN set -ex && \
         apk add --update py-pip unzip && \
         rm -rf /var/cache/apk/*
 
-RUN chgrp -R 0 /var/cache/nginx
-
 RUN set -ex && \
         mkdir /tmp/indico-pip && \
         pip install -U pip && \
