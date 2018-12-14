@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 FROM centos:centos7
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/indico.conf"
@@ -6,6 +8,7 @@ ARG KRB_CACHE_DIR='/var/run/keytab'
 ARG pip="${INDICO_VIRTUALENV}/pip"
 ARG use_xrootd=""
 ARG tag="latest"
+ARG custom_wheels
 
 ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 
@@ -40,7 +43,10 @@ RUN ${pip} install --upgrade pip && \
 
 RUN yum install -y openldap-devel
 
-RUN if [ "$tag" = "latest" ]; then \
+RUN --mount=target=/wheels,type=bind,source=wheels \
+if [[ ! -z "$custom_wheels" ]]; then \
+    ${pip} install /wheels/*; \
+elif [[ "$tag" = "latest" ]]; then \
     ${pip} install indico; \
 else \
     ${pip} install indico==${tag}; \
