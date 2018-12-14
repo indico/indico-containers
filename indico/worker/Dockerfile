@@ -36,10 +36,9 @@ fi
 
 
 RUN ${pip} install --upgrade pip && \
-    ${pip} install pgcli && \
-    ${pip} install uwsgi && \
-    ${pip} install raven
+    ${pip} install pgcli uwsgi raven
 
+RUN yum install -y openldap-devel
 
 RUN if [ "$tag" = "latest" ]; then \
     ${pip} install indico; \
