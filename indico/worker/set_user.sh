@@ -1,10 +1,9 @@
 #!/bin/sh
-export USER_ID=$(id -u)
-export GROUP_ID=$(id -g)
-cp /etc/passwd /tmp/passwd
-envsubst < /tmp/passwd.template >> /tmp/passwd
-export LD_PRELOAD=libnss_wrapper.so
-export NSS_WRAPPER_PASSWD=/tmp/passwd
-export NSS_WRAPPER_GROUP=/etc/group
+# this script adds the current user to /etc/passwd as per:
+# https://docs.okd.io/latest/creating_images/guidelines.html#use-uid
 
-export KRB5CCNAME=FILE:${KRB_CACHE_DIR}/user.krb5
+if ! whoami &> /dev/null; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-indico}:x:$(id -u):0:${USER_NAME:-indico} user:${HOME}:/sbin/nologin" >> /etc/passwd
+  fi
+fi

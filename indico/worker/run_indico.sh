@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /opt/indico/set_user.sh
+/opt/indico/set_user.sh
 . /opt/indico/.venv/bin/activate
 
 psql $PGDATABASE -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /opt/indico/set_user.sh
+/opt/indico/set_user.sh
 . /opt/indico/.venv/bin/activate
 
 echo 'Waiting for indico-web to be online...'

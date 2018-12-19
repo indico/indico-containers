@@ -23,7 +23,7 @@ RUN if [ -n "${use_xrootd}" ]; then \
     yum update -y && \
     yum install -y xrootd-client xrootd-client-devel xrootd-python; \
 fi
-RUN yum install -y vim less python-virtualenv nss_wrapper gcc gettext
+RUN yum install -y vim less python-virtualenv gcc gettext
 RUN yum clean all
 
 COPY passwd.template /tmp/
@@ -67,7 +67,8 @@ VOLUME ${KRB_CACHE_DIR}
 RUN chgrp -R 0 /opt/indico
 
 COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
-RUN chmod 755 /opt/indico/run_*.sh
+RUN chmod 755 /opt/indico/*.sh
+RUN chmod g=u /etc/passwd
 
 ENV USE_XROOTD ${use_xrootd}
 ENV USE_PROXY ${use_proxy}
