@@ -57,8 +57,8 @@ RUN if [ -n "${use_xrootd}" ]; then \
     ${pip} install indico-plugin-storage-xrootd==1.0; \
 fi
 
-RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
-RUN ${INDICO_VIRTUALENV}/indico setup create_logging_config /opt/indico/etc
+RUN ${INDICO_VIRTUALENV}/indico setup create-symlinks /opt/indico
+RUN ${INDICO_VIRTUALENV}/indico setup create-logging-config /opt/indico/etc
 
 COPY indico.conf logging.yaml /opt/indico/etc/
 
