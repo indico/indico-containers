@@ -11,11 +11,11 @@ server {
   }
 
   location ~ ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$ {
-    alias /home/jdoe/dev/indico/src/indico/web/static/$1$2/$3.$5;
+    alias /opt/indico/web/static/$1$2/$3.$5;
   }
 
   location ~ ^/(css|dist|images|fonts)/(.*)$ {
-    alias /home/jdoe/dev/indico/src/indico/web/static/$1/$2;
+    alias /opt/indico/web/static/$1/$2;
   }
 
   location / {

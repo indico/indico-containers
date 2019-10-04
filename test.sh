@@ -3,7 +3,7 @@
 # cp indico-web.env.sample indico-web.env
 # sed ...
 
-URL=http://localhost:8080/category/0/statistics
+URL=http://localhost:9090/category/0/statistics
 TIMEOUT=120
 
 # make sure the cluster is down
