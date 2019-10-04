@@ -10,23 +10,12 @@ server {
     alias /opt/indico/;
   }
 
-  location ~ ^/static/assets/(core|(?:plugin|theme)-[^/]+)/(.*)$ {
-    alias /opt/indico/static/assets/$1/$2;
-    access_log off;
+  location ~ ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$ {
+    alias /home/jdoe/dev/indico/src/indico/web/static/$1$2/$3.$5;
   }
 
-  location ~ ^/(ihelp|css|images|js|(static/fonts))(/.*)$ {
-    proxy_pass  http://indico-static:8080;
-  }
-
-  location /robots.txt {
-    alias /opt/indico/static/htdocs/robots.txt;
-    access_log off;
-  }
-
-  location /static/custom {
-    alias /opt/indico/custom;
-    access_log off;
+  location ~ ^/(css|dist|images|fonts)/(.*)$ {
+    alias /home/jdoe/dev/indico/src/indico/web/static/$1/$2;
   }
 
   location / {

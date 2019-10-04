@@ -10,7 +10,7 @@ RUN set -ex && \
         mkdir /tmp/indico-pip && \
         pip install -U pip && \
         pip download --no-deps -d /tmp/indico-pip indico && \
-        unzip /tmp/indico-pip/indico-*.whl -d /srv/ 'indico/htdocs/*' && \
+        unzip /tmp/indico-pip/indico-*.whl -d /srv/ 'indico/web/static/*' && \
         rm -rf /tmp/indico-pip
 
 RUN rm /etc/nginx/conf.d/default.conf
