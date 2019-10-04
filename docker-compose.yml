@@ -9,12 +9,12 @@ services:
     ports:
       - "9090:59999"  # tcp socket port
     networks:
-        - backend
-        - frontend
+      - backend
+      - frontend
     env_file:
       - indico.env
     volumes:
-      - './data/archive:/opt/indico/archive'
+      - 'archive:/opt/indico/archive'
       - './data/log/nginx:/opt/indico/log/nginx'
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
@@ -32,7 +32,8 @@ services:
       - indico-redis
     command: /opt/indico/run_celery.sh
     ports: []
-    volumes: []
+    volumes:
+      - 'archive:/opt/indico/archive'
   indico-redis:
     image: redis
     networks:
@@ -59,6 +60,7 @@ services:
     volumes_from:
       - indico-web
 volumes:
+  archive:
   static-files:
   customization:
 networks:
