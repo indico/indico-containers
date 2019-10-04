@@ -10,19 +10,16 @@ ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 
 USER root
 
-RUN apt-get update
-RUN apt-get install -y texlive-xetex libpq-dev postgresql-client
+RUN set -ex && \
+    apt-get update && \
+    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less python-virtualenv gcc gettext && \
+    apt-get clean
 
-RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,assets,cache,archive}"]
-
-RUN apt-get install -y vim less python-virtualenv gcc gettext
-RUN apt-get clean
-
-COPY passwd.template /tmp/
+RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,cache,archive}"]
 
 RUN virtualenv ${INDICO_VIRTUALENV}
 
-RUN ${pip} install --upgrade pip && \
+RUN ${pip} install --upgrade pip setuptools && \
     ${pip} install uwsgi raven
 
 RUN apt-get install -y libldap2-dev
