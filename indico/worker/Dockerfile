@@ -1,44 +1,31 @@
-FROM centos:centos7
+FROM python:2.7-buster
 
-ENV INDICO_VIRTUALENV="/opt/indico/.venv/bin" INDICO_CONFIG="/opt/indico/etc/indico.conf"
+ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
 ARG KRB_CACHE_DIR='/var/run/keytab'
-ARG pip="${INDICO_VIRTUALENV}/pip"
-ARG use_xrootd=""
+ARG pip="${INDICO_VIRTUALENV}/bin/pip"
 ARG tag="latest"
 
 ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 
 USER root
 
-RUN yum update -y;
-RUN yum install -y epel-release;
-RUN yum install -y texlive-xetex
-RUN yum localinstall -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
-RUN yum update -y
-RUN yum install -y postgresql96
-RUN mkdir -p --mode=775 /opt/indico/{etc,tmp,log,assets,cache,archive,static}
+RUN apt-get update
+RUN apt-get install -y texlive-xetex libpq-dev postgresql-client
 
-RUN if [ -n "${use_xrootd}" ]; then \
-    yum update -y && \
-    yum install -y xrootd-client xrootd-client-devel xrootd-python; \
-fi
-RUN yum install -y vim less python-virtualenv gcc gettext
-RUN yum clean all
+RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,assets,cache,archive}"]
+
+RUN apt-get install -y vim less python-virtualenv gcc gettext
+RUN apt-get clean
 
 COPY passwd.template /tmp/
 
-RUN if [ -z "${use_xrootd}" ]; then \
-    virtualenv /opt/indico/.venv; \
-else \
-    virtualenv /opt/indico/.venv --system-site-packages; \
-fi
-
+RUN virtualenv ${INDICO_VIRTUALENV}
 
 RUN ${pip} install --upgrade pip && \
-    ${pip} install pgcli uwsgi raven
+    ${pip} install uwsgi raven
 
-RUN yum install -y openldap-devel
+RUN apt-get install -y libldap2-dev
 
 RUN if [ "$tag" = "latest" ]; then \
     ${pip} install indico; \
@@ -46,13 +33,8 @@ else \
     ${pip} install indico==${tag}; \
 fi;
 
-
-RUN if [ -n "${use_xrootd}" ]; then \
-    ${pip} install indico-plugin-storage-xrootd==1.0; \
-fi
-
-RUN ${INDICO_VIRTUALENV}/indico setup create_symlinks /opt/indico
-RUN ${INDICO_VIRTUALENV}/indico setup create_logging_config /opt/indico/etc
+RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
+RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
 
 COPY indico.conf logging.yaml /opt/indico/etc/
 
@@ -70,5 +52,4 @@ COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
 RUN chmod 755 /opt/indico/*.sh
 RUN chmod g=u /etc/passwd
 
-ENV USE_XROOTD ${use_xrootd}
 ENV USE_PROXY ${use_proxy}
