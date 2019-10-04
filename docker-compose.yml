@@ -7,7 +7,7 @@ services:
       - indico-redis
       - indico-celery
     ports:
-      - "59999"  # tcp socket port
+      - "9090:59999"  # tcp socket port
     networks:
         - backend
         - frontend
