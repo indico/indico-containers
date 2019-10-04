@@ -134,9 +134,6 @@ objects:
       type: Dockerfile
     strategy:
       dockerStrategy:
-        buildArgs:
-          - name: use_xrootd
-            value: 'yes'
         from:
           kind: ImageStreamTag
           name: 'indico:stable'
