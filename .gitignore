@@ -4,3 +4,5 @@ data/*
 
 # IDE files
 .idea/
+
+secrets/

@@ -30,10 +30,10 @@ else \
     ${pip} install indico==${tag}; \
 fi;
 
+RUN ${pip} install indico-plugins
+
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
-
-COPY indico.conf logging.yaml /opt/indico/etc/
 
 EXPOSE 59999
 
@@ -45,8 +45,11 @@ VOLUME ${KRB_CACHE_DIR}
 # This user is always in the root group so it is needed to grant privileges to group 0.
 RUN chgrp -R 0 /opt/indico
 
+COPY indico.conf logging.yaml /opt/indico/etc/
+RUN chgrp -R 0 /opt/indico/etc/indico.conf /opt/indico/etc/logging.yaml
+
 COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
 RUN chmod 755 /opt/indico/*.sh
 RUN chmod g=u /etc/passwd
 
-ENV USE_PROXY ${use_proxy}
+ENV XELATEX_PATH=xelatex

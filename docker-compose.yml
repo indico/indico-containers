@@ -1,21 +1,22 @@
 version: "2"
 services:
   indico-web: &indico-web
-    image: getindico/indico:latest
+    build: indico/worker
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis
       - indico-celery
-    ports:
-      - "9090:59999"  # tcp socket port
     networks:
       - backend
       - frontend
     env_file:
+      - .env
       - indico.env
+      - secrets/postgres.env
+      - secrets/secret.env
     volumes:
       - 'archive:/opt/indico/archive'
-      - './data/log/nginx:/opt/indico/log/nginx'
+      - 'logs:/opt/indico/log/nginx'
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
     tmpfs:
@@ -39,30 +40,47 @@ services:
     networks:
       - backend
     volumes:
-      - './data/redis:/data'
+      - 'cache:/data'
   indico-postgres:
     image: centos/postgresql-96-centos7
     networks:
       - backend
     environment:
-      - POSTGRESQL_USER=indico
-      - POSTGRESQL_PASSWORD=indicopass
-      - POSTGRESQL_DATABASE=indico
-      - POSTGRESQL_ADMIN_PASSWORD=indicopass
+      - POSTGRESQL_USER=${PGUSER}
+      - POSTGRESQL_DATABASE=${PGDATABASE}
+    env_file:
+      - secrets/postgres.env
+    volumes:
+      - 'database:/var/lib/pgsql/data'
   indico-nginx:
-    build: nginx
+    build:
+      context: nginx
+      args:
+        - CERT_BASENAME=${CERT_BASENAME}
+    depends_on:
+      - indico-web
+    env_file:
+      - .env
+    ports:
+      - "${SERVICE_HTTP_PORT}:${SERVICE_HTTP_PORT}"
+      - "${SERVICE_HTTPS_PORT}:${SERVICE_HTTPS_PORT}"
     networks:
       - frontend
-    env_file:
-      - indico.env
-    ports:
-      - "8080:8080"
-    volumes_from:
-      - indico-web
 volumes:
   archive:
+    external:
+      name: ${ARCHIVE_VOLUME_HOST}
   static-files:
+    external:
+      name: ${STATIC_VOLUME_HOST}
   customization:
+    external:
+      name: ${CUSTOM_VOLUME_HOST}
+  logs:
+  cache:
+  database:
+    external:
+      name: ${DB_VOLUME_HOST}
 networks:
   backend: {}
   frontend: {}

@@ -3,7 +3,7 @@
 # cp indico-web.env.sample indico-web.env
 # sed ...
 
-URL=http://localhost:9090/category/0/statistics
+URL=https://localhost:443/category/0/statistics
 TIMEOUT=120
 
 # make sure the cluster is down
@@ -27,7 +27,7 @@ pid=$$
 ) &
 alarm=$!
 
-while [[ "$(curl -L --max-time 10 -s -o /dev/null -w ''%{http_code}'' $URL)" != "200" ]]; do
+while [[ "$(curl -k -L --max-time 10 -s -o /dev/null -w ''%{http_code}'' $URL)" != "200" ]]; do
     sleep 30;
     echo 'Waiting...'
 done

@@ -4,9 +4,10 @@
 
 Simple Docker config to try Indico out.
 
-**ATTENTION: DO NOT use this in production as it is. There are important things missing, such as HTTPS support.**
+**ATTENTION: DO NOT use this in production as it is. There are important things missing.**
 
 ```sh
+$ make
 $ docker-compose up
 ```
 
