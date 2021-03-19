@@ -1,13 +1,24 @@
 server {
   listen *:$SERVICE_HTTP_PORT;
-  listen [::]:$SERVICE_HTTP_PORT;
   server_name $SERVICE_HOSTNAME;
-  return 301 https://$server_name:$SERVICE_HTTPS_PORT$request_uri;
+  set $redirect_https_port $SERVICE_HTTPS_PORT;
+
+  location /.well-known/acme-challenge/ {
+    root /tmp/.well-known/acme-challenge/;
+  }
+
+  location / {
+   if ( $redirect_https_port = "443" ) {
+       return 301 https://$server_name$request_uri;
+   }
+   if ( $redirect_https_port ~ "443" ) {
+      return 301 https://$server_name:$redirect_https_port$request_uri;
+   }
+  }
 }
 
 server {
   listen *:$SERVICE_HTTPS_PORT ssl http2;
-  listen [::]:$SERVICE_HTTPS_PORT ssl http2 default ipv6only=on;
 
   server_name $SERVICE_HOSTNAME;
 

@@ -1,27 +1,32 @@
-FROM nginxinc/nginx-unprivileged:stable-alpine
+from nginx
 
-USER root
+RUN apt-get update -q \
+	&& DEBIAN_FRONTEND=noninteractive \
+	apt-get install -qy --no-install-recommends \
+	cron gettext-base \
+	&& apt-get autoremove \
+	&& apt-get autoclean \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN set -ex && \
-        apk add --update py-pip unzip && \
-        rm -rf /var/cache/apk/*
+ARG SERVICE_HTTP_PORT
+ARG SERVICE_HTTPS_PORT
+EXPOSE $SERVICE_HTTP_PORT
+EXPOSE $SERVICE_HTTPS_PORT
 
-RUN rm /etc/nginx/conf.d/default.conf
+ENV ACME_DIR=/root/.acme.sh
+ARG LETSENCRYPT_MAIL
+RUN curl https://get.acme.sh | sh -s email=$LETSENCRYPT_MAIL \
+    && mkdir -p /tmp/.well-known/acme-challenge/
 
-ARG CERT_BASENAME
-ENV SERVICE_HTTP_PORT=80 SERVICE_HTTPS_PORT=443
+RUN rm -f /etc/nginx/conf.d/default.conf
 
-COPY indico.conf.template /tmp
-COPY secrets/$CERT_BASENAME.crt /opt/secrets/
-COPY secrets/$CERT_BASENAME.key /opt/secrets/
-
-EXPOSE $SERVICE_HTTP_PORT $SERVICE_HTTPS_PORT
+COPY secrets/mycert.crt /opt/secrets/
+COPY secrets/mycert.key /opt/secrets/
+COPY indico.conf.template /tmp/
+COPY run.sh /tmp/
 
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.
 RUN chgrp -R 0 /var/* /etc/nginx && chmod -R g+rwX /var/* /etc/nginx
 
-COPY run.sh /
-RUN chmod +x /run.sh
-
-ENTRYPOINT ["/run.sh"]
+CMD /tmp/run.sh

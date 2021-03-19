@@ -2,6 +2,7 @@ version: "2"
 services:
   indico-web: &indico-web
     build: indico/worker
+    restart: unless-stopped
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis
@@ -23,10 +24,12 @@ services:
       - /opt/indico/tmp
   indico-static:
     build: indico/static
+    restart: unless-stopped
     networks:
       - frontend
   indico-celery:
     <<: *indico-web
+    restart: unless-stopped
     networks:
       - backend
     depends_on:
@@ -37,12 +40,14 @@ services:
       - 'archive:/opt/indico/archive'
   indico-redis:
     image: redis
+    restart: unless-stopped
     networks:
       - backend
     volumes:
       - 'cache:/data'
   indico-postgres:
     image: centos/postgresql-96-centos7
+    restart: unless-stopped
     networks:
       - backend
     environment:
@@ -56,7 +61,8 @@ services:
     build:
       context: nginx
       args:
-        - CERT_BASENAME=${CERT_BASENAME}
+        - LETSENCRYPT_MAIL=${LETSENCRYPT_MAIL}
+    restart: unless-stopped
     depends_on:
       - indico-web
     env_file:

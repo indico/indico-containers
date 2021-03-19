@@ -29,15 +29,15 @@ secrets/secret.env:
 	@echo "Generating secret key in $@"
 	@echo "SECRET_KEY=$(shell openssl rand -hex 32)" > $@
 
-nginx/secrets/$(CERT_BASENAME).key: nginx/secrets/$(CERT_BASENAME).crt
+nginx/secrets/mycert.key: nginx/secrets/mycert.crt
 
-nginx/secrets/$(CERT_BASENAME).crt:
+nginx/secrets/mycert.crt:
 	@mkdir -p nginx/secrets
 	@openssl req -x509 -nodes -days $(CERT_DAYS) -newkey rsa:2048 -keyout \
-	nginx/secrets/$(CERT_BASENAME).key -out nginx/secrets/$(CERT_BASENAME).crt
+	nginx/secrets/mycert.key -out nginx/secrets/mycert.crt
 
 .PHONY: build
-build: nginx/secrets/$(CERT_BASENAME).crt nginx/secrets/$(CERT_BASENAME).key secrets/postgres.env secrets/secret.env volumes
+build: nginx/secrets/mycert.crt nginx/secrets/mycert.key secrets/postgres.env secrets/secret.env volumes
 	docker-compose build
 
 .PHONY: purge
