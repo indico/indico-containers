@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.9
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
