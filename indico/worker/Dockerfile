@@ -1,4 +1,4 @@
-FROM python:2.7-buster
+FROM python:3.9
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
@@ -12,7 +12,7 @@ USER root
 
 RUN set -ex && \
     apt-get update && \
-    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less python-virtualenv gcc gettext && \
+    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less python3-virtualenv gcc gettext && \
     apt-get clean
 
 RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,cache,archive}"]
