@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   indico-web: &indico-web
     image: getindico/indico:latest
@@ -52,8 +52,8 @@ services:
       - indico.env
     ports:
       - "8080:8080"
-    volumes_from:
-      - indico-web
+    volumes:
+      - 'static-files:/opt/indico/static:ro'
 volumes:
   archive:
   static-files:
