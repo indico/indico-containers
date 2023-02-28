@@ -1,31 +1,28 @@
 server {
-  listen ${SERVICE_PORT};
-  listen [::]:${SERVICE_PORT};
+  # localhost:8080 is the main entrypoint with this docker-compose setup
+  listen 8080;
+  listen [::]:8080;
 
-  access_log            /dev/stdout combined;
-  error_log             /dev/stdout info;
+  access_log /dev/stdout combined;
+  error_log  /dev/stdout info;
+  root       /var/empty;
 
-  location /.xsf/indico/ {
-    internal;
-    alias /opt/indico/;
-  }
-
+  # Serve static files
   location ~ ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$ {
-    alias /opt/indico/web/static/$1$2/$3.$5;
+    alias /opt/indico/static/$1$2/$3.$5;
   }
 
   location ~ ^/(css|dist|images|fonts)/(.*)$ {
-    alias /opt/indico/web/static/$1/$2;
+    alias /opt/indico/static/$1/$2;
   }
 
   location / {
-    root /var/empty/nginx;
+    # indico-web is the container running Indico
     proxy_pass http://indico-web:59999;
-    proxy_set_header  Host $host:$server_port;
-    proxy_set_header  X-Real-IP $http_cf_connecting_ip;
-    proxy_set_header  X-Forwarded-For $http_cf_connecting_ip;
-    proxy_set_header  X-Forwarded-Proto $http_x_forwarded_proto;
-    client_max_body_size 1G;
+    # Set the header to match the Indico BASE_URL configuration,
+    # otherwise Flask will complain that the URLs don't match
+    proxy_set_header Host ${SERVICE_HOSTNAME}:${SERVICE_PORT};
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
   }
-
 }
