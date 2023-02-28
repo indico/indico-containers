@@ -1,5 +1,7 @@
 version: "3"
 services:
+  # The main Indico container which runs flask
+  # The same image is also used to run celery
   indico-web: &indico-web
     image: getindico/indico:latest
     command: /opt/indico/run_indico.sh
@@ -7,18 +9,21 @@ services:
       - indico-redis
       - indico-celery
     ports:
-      - "9090:59999"  # tcp socket port
+     # Indico is accessible either via nginx (localhost:8080), or
+     # directly via localhost:9090. In that case, static assets are served by flask
+      - "9090:59999"
     networks:
       - backend
       - frontend
     env_file:
       - indico.env
     volumes:
-      - 'archive:/opt/indico/archive'
+      - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
     tmpfs:
       - /opt/indico/tmp
+  # Indico celery
   indico-celery:
     <<: *indico-web
     networks:
@@ -29,12 +34,14 @@ services:
     ports: []
     volumes:
       - 'archive:/opt/indico/archive'
+  # Redis
   indico-redis:
     image: redis
     networks:
       - backend
     volumes:
       - './data/redis:/data'
+  # Postgres
   indico-postgres:
     image: centos/postgresql-13-centos7
     networks:
@@ -44,6 +51,8 @@ services:
       - POSTGRESQL_PASSWORD=indicopass
       - POSTGRESQL_DATABASE=indico
       - POSTGRESQL_ADMIN_PASSWORD=indicopass
+  # Nginx proxy
+  # Indico can be accessed via localhost:8080
   indico-nginx:
     build: nginx
     networks:
