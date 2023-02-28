@@ -20,10 +20,6 @@ services:
       - 'static-files:/opt/indico/static'
     tmpfs:
       - /opt/indico/tmp
-  indico-static:
-    build: indico/static
-    networks:
-      - frontend
   indico-celery:
     <<: *indico-web
     networks:
