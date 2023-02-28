@@ -1,4 +1,4 @@
-FROM python:3.9-bullseye
+FROM python:3.10-bullseye
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
@@ -48,5 +48,3 @@ RUN chgrp -R 0 /opt/indico
 COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
 RUN chmod 755 /opt/indico/*.sh
 RUN chmod g=u /etc/passwd
-
-ENV USE_PROXY ${use_proxy}
