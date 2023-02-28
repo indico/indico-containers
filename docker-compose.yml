@@ -15,7 +15,6 @@ services:
       - indico.env
     volumes:
       - 'archive:/opt/indico/archive'
-      - './data/log/nginx:/opt/indico/log/nginx'
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
     tmpfs:
