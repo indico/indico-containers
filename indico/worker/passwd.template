@@ -1,1 +1,0 @@
-indico:x:${USER_ID}:${GROUP_ID}:Indico:/opt/indico:/bin/bash
