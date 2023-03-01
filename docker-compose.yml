@@ -16,7 +16,7 @@ services:
       - backend
       - frontend
     env_file:
-      - indico.env
+      - indico.prod.env
     volumes:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
@@ -58,7 +58,7 @@ services:
     networks:
       - frontend
     env_file:
-      - indico.env
+      - indico.prod.env
     ports:
       - "8080:8080"
     volumes:
