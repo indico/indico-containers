@@ -70,3 +70,23 @@ $ docker run \
 ```
 
 In the above, we omit the network setup to make e.g. the DB accessible from the containers.
+
+## Development setup
+
+The development setup builds an image from the latest master. Essentially, it puts this [tutorial](https://docs.getindico.io/en/stable/installation/development/) into a Dockerfile. The main purpose of this setup is to allow anyone to relatively quickly and painlessly try out the latest translations from Transifex without having to manually setup an Indico instance.
+
+### Quickstart
+
+To start the containers, run:
+```sh
+$ cd indico-dev && docker compose up
+```
+Indico should now be accessible at [localhost:8080](localhost:8080).
+
+The Indico container by default pulls the latest translations from a public mirror which does not need authentication. The mirror updates its translations once every hour. If you want to pull directly from Transifex, you can provide your Transifex API token in the [dev.env](dev.env) file (`TRANSIFEX_API_TOKEN=1/xxx`).
+
+The development setup creates a default admin user with username `admin` and password `indiko42`.
+
+Since emails also get translated, you can use maildump to check those as well. Maildump is available at [localhost:60000](localhost:60000).
+
+Check the [production setup](#production-like-setup) to see more configuration options.
