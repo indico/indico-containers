@@ -23,7 +23,7 @@ The production setup contains:
 - _indico-redis_ - redis
 - _indico-nginx_ - nginx proxy ([localhost:8080](localhost:8080))
 
-_indico-web_ uses the `getindico/indico` image from Dockerhub. You can build this image locally using `build_latest.sh`. The `getindico/indico` pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use the `INDICO_EXTRA_PLUGINS` env variable to enable them.
+_indico-web_ uses the `getindico/indico` image from Dockerhub. You can build this image locally using `build_latest.sh`. The `getindico/indico` pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use the `INDICO_EXTRA_PLUGINS` env variable to enable them. For example, you can set `INDICO_EXTRA_PLUGINS=vc_zoom,owncloud` to enable the Zoom and ownCloud integration.
 
 The `getindico/indico` container can also be used standalone outside of this docker-compose setup, as long as the remaning services (postgres, redis, celery) are available elsewhere. In that case, make sure to specify `REDIS_CACHE_URL`, `CELERY_BROKER`, `PGHOST`, `PGUSER`, etc..
 
