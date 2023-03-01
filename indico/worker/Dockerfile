@@ -29,6 +29,7 @@ RUN if [ "$tag" = "latest" ]; then \
 else \
     ${pip} install indico==${tag}; \
 fi;
+RUN ${pip} install indico-plugins
 
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
