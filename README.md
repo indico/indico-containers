@@ -4,18 +4,20 @@
 
 [![Build Status](https://www.travis-ci.org/indico/indico-containers.svg?branch=master)](https://www.travis-ci.org/indico/indico-containers)
 
-Before you run this setup, you might want to configure some environment variables.
-There is also a [sample env file](indico.prod.env.sample) which you can start with:
-```bash
-$ cp indico.prod.env.sample indico.prod.env
-```
+### Quickstart
 
 To start the containers, run:
 ```sh
-$ docker compose up
+$ docker compose --env-file prod.env --file docker-compose.prod.yml up
 ```
 
 Indico will be accessible at [localhost:8080](localhost:8080). You can also access the wsgi app directly [localhost:9090](localhost:9090) which skips the nginx proxy.
+
+### Configuration
+
+There are two config files which you can use to configure this setup.
+- [prod.env](prod.env) - This files specified general properties like the DB config, nginx port and the path to `indico.conf`
+- [indico.prod.conf](indico.prod.conf) - This is the standard `indico.conf` used by Indico itself. It is passed to the containers as a read-only volume. You can configure anything as you normally would here.
 
 The production setup contains:
 - _indico-web_ - Indico running behind uwsgi ([localhost:9090](localhost:9090))
@@ -25,19 +27,28 @@ The production setup contains:
 
 _indico-web_ uses the `getindico/indico` image from Dockerhub. You can build this image locally using `build_latest.sh`. The `getindico/indico` pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use the `INDICO_EXTRA_PLUGINS` env variable to enable them. For example, you can set `INDICO_EXTRA_PLUGINS=vc_zoom,owncloud` to enable the Zoom and ownCloud integration.
 
-The `getindico/indico` container can also be used standalone outside of this docker-compose setup, as long as the remaning services (postgres, redis, celery) are available elsewhere. In that case, make sure to specify `REDIS_CACHE_URL`, `CELERY_BROKER`, `PGHOST`, `PGUSER`, etc..
+### Different setups
 
-This is how you can run Indico:
-```bash
+If you don't need the DB and the nginx proxy, you can just run:
+```sh
+$ docker compose --env-file prod.env --file docker-compose.prod.yml up indico-web
+```
+
+This will bring up only Indico, celery and redis. The DB should be on the same network to be accessible.
+
+The `getindico/indico` container can also be used completely standalone outside of this docker-compose setup, as long as the remaning services (postgres, redis, celery) are available elsewhere. In that case, make sure to change `REDIS_CACHE_URL`, `CELERY_BROKER`, `PGHOST`, `PGUSER`, etc..
+
+This is how you can run Indico itself:
+```sh
 $ docker run getindico/indico /opt/indico/run_indico.sh
 ```
 
 Or to run celery:
-```bash
+```sh
 $ docker run getindico/indico /opt/indico/run_celery.sh
 ```
 
-These examples omit the port mappings in order to make e.g. the DB accessible from the container.
+We again omit the port mappings to make e.g. the DB accessible from the container.
 
 ## OpenShift
 

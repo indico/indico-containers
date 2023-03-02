@@ -19,8 +19,7 @@ RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,cache,arch
 
 RUN python -m venv ${INDICO_VIRTUALENV}
 
-RUN ${pip} install --upgrade pip setuptools && \
-    ${pip} install uwsgi
+RUN ${pip} install --upgrade pip setuptools uwsgi
 
 RUN apt-get install -y libldap2-dev
 
@@ -34,13 +33,13 @@ RUN ${pip} install indico-plugins
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
 
-COPY indico.conf /opt/indico/etc/
-
 EXPOSE 59999
 
 COPY uwsgi.ini /etc/uwsgi.ini
 
 VOLUME ${KRB_CACHE_DIR}
+
+WORKDIR /opt/indico
 
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.

@@ -8,15 +8,13 @@ RUN set -ex && \
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY indico.conf.template /tmp
-
 EXPOSE 8080
 
 # OpenShift runs containers using an arbitrarily assigned user ID for security reasons
 # This user is always in the root group so it is needed to grant privileges to group 0.
 RUN chgrp -R 0 /var/* /etc/nginx && chmod -R g+rwX /var/* /etc/nginx
 
-COPY run.sh /
-RUN chmod +x /run.sh
+COPY indico.conf /etc/nginx/conf.d/indico.conf
 
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT ["/usr/sbin/nginx"]
+CMD ["-g", "daemon off;"]

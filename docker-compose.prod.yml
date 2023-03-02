@@ -15,25 +15,31 @@ services:
     networks:
       - backend
       - frontend
-    env_file:
-      - indico.prod.env
+    environment:
+      - PGHOST=${PGHOST}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - C_FORCE_ROOT=${C_FORCE_ROOT}
     volumes:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
+      - type: bind
+        source: ${INDICO_CONFIG}
+        target: /opt/indico/etc/indico.conf
+        read_only: true
     tmpfs:
       - /opt/indico/tmp
   # Indico celery
   indico-celery:
     <<: *indico-web
-    networks:
-      - backend
+    command: /opt/indico/run_celery.sh
     depends_on:
       - indico-redis
-    command: /opt/indico/run_celery.sh
     ports: []
-    volumes:
-      - 'archive:/opt/indico/archive'
+    networks:
+      - backend
   # Redis
   indico-redis:
     image: redis
@@ -47,20 +53,18 @@ services:
     networks:
       - backend
     environment:
-      - POSTGRESQL_USER=indico
-      - POSTGRESQL_PASSWORD=indicopass
-      - POSTGRESQL_DATABASE=indico
-      - POSTGRESQL_ADMIN_PASSWORD=indicopass
+      - POSTGRESQL_USER=${PGUSER}
+      - POSTGRESQL_PASSWORD=${PGPASSWORD}
+      - POSTGRESQL_DATABASE=${PGDATABASE}
+      - POSTGRESQL_ADMIN_PASSWORD=${PGPASSWORD}
   # Nginx proxy
-  # Indico can be accessed via localhost:8080
+  # Indico can be accessed by default via localhost:8080
   indico-nginx:
     build: nginx
     networks:
       - frontend
-    env_file:
-      - indico.prod.env
     ports:
-      - "8080:8080"
+      - "${NGINX_PORT:-8080}:8080"
     volumes:
       - 'static-files:/opt/indico/static:ro'
 volumes:
