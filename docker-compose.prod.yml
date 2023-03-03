@@ -8,19 +8,19 @@ services:
     depends_on:
       - indico-redis
       - indico-celery
-    ports:
-     # Indico is accessible either via nginx (localhost:8080), or
-     # directly via localhost:9090. In that case, static assets are served by flask
-      - "9090:59999"
-    networks:
-      - backend
-      - frontend
     environment:
       - PGHOST=${PGHOST}
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
       - PGDATABASE=${PGDATABASE}
       - C_FORCE_ROOT=${C_FORCE_ROOT}
+    networks:
+      - backend
+      - frontend
+    ports:
+     # Indico is accessible either via nginx (localhost:8080 by default), or
+     # directly via localhost:9090. In that case, static assets are served by flask
+      - "9090:59999"
     volumes:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
@@ -38,9 +38,9 @@ services:
     command: /opt/indico/run_celery.sh
     depends_on:
       - indico-redis
-    ports: []
     networks:
       - backend
+    ports: []
   # Redis
   indico-redis:
     image: redis
@@ -51,17 +51,19 @@ services:
   # Postgres
   indico-postgres:
     image: centos/postgresql-13-centos7
-    networks:
-      - backend
     environment:
       - POSTGRESQL_USER=${PGUSER}
       - POSTGRESQL_PASSWORD=${PGPASSWORD}
       - POSTGRESQL_DATABASE=${PGDATABASE}
       - POSTGRESQL_ADMIN_PASSWORD=${PGPASSWORD}
+    networks:
+      - backend
   # Nginx proxy
   # Indico can be accessed by default via localhost:8080
   indico-nginx:
     build: nginx
+    environment:
+      - NGINX_SERVER_NAME=${NGINX_SERVER_NAME}
     networks:
       - frontend
     ports:
