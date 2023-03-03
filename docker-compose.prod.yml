@@ -25,6 +25,7 @@ services:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
+      - './data/indico/log:/opt/indico/log' # logs
       - type: bind
         source: ${INDICO_CONFIG}
         target: /opt/indico/etc/indico.conf
@@ -67,6 +68,7 @@ services:
       - "${NGINX_PORT:-8080}:8080"
     volumes:
       - 'static-files:/opt/indico/static:ro'
+      - './data/nginx/log:/var/log/nginx' # logs
 volumes:
   archive:
   static-files:
