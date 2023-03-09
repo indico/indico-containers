@@ -8,7 +8,7 @@
 
 To start the containers, run:
 ```sh
-$ docker compose --env-file prod.env --file docker-compose.prod.yml up
+$ cd indico-prod && docker compose up
 ```
 
 Indico will be accessible at [localhost:8080](localhost:8080). You can also access the wsgi app directly at [localhost:9090](localhost:9090) which skips the nginx proxy.
@@ -31,7 +31,7 @@ _indico-web_ uses the `getindico/indico` image from Dockerhub. You can build thi
 
 If you don't need the DB and the nginx proxy, you can just run:
 ```sh
-$ docker compose --env-file prod.env --file docker-compose.prod.yml up indico-web
+$ docker compose up indico-web
 ```
 
 This will bring up only Indico, celery and redis. The DB should be on the same network to be accessible.

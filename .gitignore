@@ -1,4 +1,5 @@
 data/*
+indico-prod/data/*
 
 # IDE files
 .idea/
