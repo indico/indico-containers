@@ -1,8 +1,8 @@
 # Docker containers for Indico
 
-## Production-like setup
+![Pipeline Status](https://github.com/indico/indico-containers/actions/workflows/ci.yml/badge.svg)
 
-[![Build Status](https://www.travis-ci.org/indico/indico-containers.svg?branch=master)](https://www.travis-ci.org/indico/indico-containers)
+## Production-like setup
 
 ### Quickstart
 
