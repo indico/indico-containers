@@ -8,11 +8,9 @@ connect_to_db() {
 }
 
 # Wait until the DB becomes available
-connect_to_db
-until [ $? -eq 0 ]; do
+until connect_to_db; do
     echo "Waiting for DB to become available..."
     sleep 1
-    connect_to_db
 done
 
 # Check whether the DB is already setup

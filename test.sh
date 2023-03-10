@@ -1,51 +1,40 @@
 #!/bin/bash
 
-# cp indico-web.env.sample indico-web.env
-# sed ...
-
-URL=http://localhost:9090/category/0/statistics
-URL2=http://localhost:9090/system-info
+DIR="indico-${1:-prod}"
+URL=http://localhost:8080/category/0/statistics
 TIMEOUT=120
 
-# avoid building obsolete static image
-sed -i -E 's/build: indico\/static/image: tianon\/true/' docker-compose.yml
-
-# make sure the cluster is down
-docker-compose down
-# then try to bring it up
-docker-compose up -d
-
-timeout_handler() {
-    # SIGALRM caught, let's just exit
-    exit 1
+check_indico_status() {
+    response=$(curl -L --write-out '%{http_code}' --silent --output /dev/null $URL)
+    [[ $response = "200" ]]
 }
 
-trap timeout_handler ALRM
+cd $DIR
+# make sure the cluster is down
+docker compose down
+# then try to bring it up
+docker compose up &
 
-# this is the timer process that will send SIGALRM
-pid=$$
-(
-    sleep $TIMEOUT
-    echo 'Timeout! Killing process'
-    kill -s ALRM $pid
-) &
-alarm=$!
+start_time="$(date -u +%s)"
+until check_indico_status; do
+    echo "Waiting for Indico to become available..."
+    sleep 10
 
-while [[ "$(curl -L --max-time 10 -s -o /dev/null -w ''%{http_code}'' $URL)" != "200" ]]; do
-    sleep 30;
-    echo 'Waiting...'
+    curr_time="$(date -u +%s)"
+    if ((($curr_time - $start_time) > TIMEOUT)); then
+        break
+    fi
 done
 
 # Print response from server, for clarity
+echo "Response from Indico:"
 curl -fsSL $URL | jq .
-curl -fsSL $URL2 | jq .
+echo ""
 
 # yay!
-echo 'Indico seems alive!'
+echo "Indico seems alive!"
 
-# remove timer
-kill -s TERM $alarm > /dev/null 2>&1
-
-docker-compose down
+echo "Shutting down..."
+docker compose down
 
 exit 0
