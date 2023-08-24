@@ -4,7 +4,11 @@
 # sed ...
 
 URL=http://localhost:9090/category/0/statistics
+URL2=http://localhost:9090/system-info
 TIMEOUT=120
+
+# avoid building obsolete static image
+sed -i -E 's/build: indico\/static/image: tianon\/true/' docker-compose.yml
 
 # make sure the cluster is down
 docker-compose down
@@ -33,7 +37,8 @@ while [[ "$(curl -L --max-time 10 -s -o /dev/null -w ''%{http_code}'' $URL)" != 
 done
 
 # Print response from server, for clarity
-curl -L $URL
+curl -fsSL $URL | jq .
+curl -fsSL $URL2 | jq .
 
 # yay!
 echo 'Indico seems alive!'
