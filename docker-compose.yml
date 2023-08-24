@@ -41,7 +41,7 @@ services:
     volumes:
       - './data/redis:/data'
   indico-postgres:
-    image: centos/postgresql-96-centos7
+    image: centos/postgresql-13-centos7
     networks:
       - backend
     environment:
