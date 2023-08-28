@@ -1,6 +1,5 @@
 #!/bin/bash
 
-/opt/indico/set_user.sh
 . /opt/indico/.venv/bin/activate
 
 check_db_ready() {

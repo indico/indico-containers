@@ -13,7 +13,6 @@ services:
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
       - PGDATABASE=${PGDATABASE}
-      - C_FORCE_ROOT=${C_FORCE_ROOT}
     networks:
       - backend
       - frontend
@@ -25,13 +24,13 @@ services:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
       - 'static-files:/opt/indico/static'
-      - './data/indico/log:/opt/indico/log' # logs
+      - 'indico-logs:/opt/indico/log' # logs
       - type: bind
         source: ${INDICO_CONFIG}
         target: /opt/indico/etc/indico.conf
         read_only: true
     tmpfs:
-      - /opt/indico/tmp
+      - /opt/indico/tmp:mode=0777
   # Indico celery
   indico-celery:
     <<: *indico-web
@@ -47,7 +46,7 @@ services:
     networks:
       - backend
     volumes:
-      - './data/redis:/data'
+      - 'redis:/data'
   # Postgres
   indico-postgres:
     image: postgres:15-bookworm
@@ -69,11 +68,14 @@ services:
       - "${NGINX_PORT:-8080}:8080"
     volumes:
       - 'static-files:/opt/indico/static:ro'
-      - './data/nginx/log:/var/log/nginx' # logs
+      - 'nginx-logs:/var/log/nginx' # logs
 volumes:
   archive:
   static-files:
   customization:
+  indico-logs:
+  nginx-logs:
+  redis:
 networks:
   backend: {}
   frontend: {}

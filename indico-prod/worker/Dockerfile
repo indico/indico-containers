@@ -5,20 +5,39 @@ ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.
 ARG pip="${INDICO_VIRTUALENV}/bin/pip"
 ARG tag="latest"
 
+# create indico user, install apt dependencies as root and setup uwsgi etc.
 USER root
 
 RUN set -ex && \
+	groupadd -r indico && \
+	useradd -r -g indico -m -d /opt/indico indico
+
+RUN set -ex && \
     apt-get update && \
-    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less gcc gettext && \
+    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less gcc gettext libldap2-dev && \
     apt-get clean
 
-RUN ["/bin/bash", "-c", "mkdir -p --mode=775 /opt/indico/{etc,tmp,log,cache,archive}"]
+COPY uwsgi.ini /etc/uwsgi.ini
+WORKDIR /opt/indico
 
-RUN python -m venv ${INDICO_VIRTUALENV}
+RUN set -ex && \
+    mkdir -p --mode=750 /opt/indico/etc && \
+    mkdir -p --mode=777 /opt/indico/tmp && \
+    mkdir -p --mode=750 /opt/indico/log && \
+    mkdir -p --mode=750 /opt/indico/cache && \
+    mkdir -p --mode=750 /opt/indico/archive && \
+    chown -R indico:indico /opt/indico
 
-RUN ${pip} install --upgrade pip setuptools uwsgi
+# XXX do we still need this?
+RUN chmod g=u /etc/passwd
 
-RUN apt-get install -y libldap2-dev
+# all the installations etc can be done using the unprivileged indico user
+USER indico
+
+RUN set -ex && \
+    python -m venv ${INDICO_VIRTUALENV} && \
+    ${pip} install --upgrade pip setuptools wheel && \
+    ${pip} install uwsgi
 
 RUN if [ "$tag" = "latest" ]; then \
     ${pip} install indico; \
@@ -27,19 +46,11 @@ else \
 fi;
 RUN ${pip} install indico-plugins
 
-RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
-RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
+RUN set -ex && \
+    ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico && \
+    ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
+
+COPY --chown=indico:indico run_indico.sh run_celery.sh set_user.sh /opt/indico/
+RUN chmod 755 /opt/indico/*.sh
 
 EXPOSE 59999
-
-COPY uwsgi.ini /etc/uwsgi.ini
-
-WORKDIR /opt/indico
-
-# OpenShift runs containers using an arbitrarily assigned user ID for security reasons
-# This user is always in the root group so it is needed to grant privileges to group 0.
-RUN chgrp -R 0 /opt/indico
-
-COPY run_indico.sh run_celery.sh set_user.sh /opt/indico/
-RUN chmod 755 /opt/indico/*.sh
-RUN chmod g=u /etc/passwd
