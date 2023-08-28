@@ -50,7 +50,7 @@ services:
       - './data/redis:/data'
   # Postgres
   indico-postgres:
-    image: postgres:13-bookworm
+    image: postgres:15-bookworm
     environment:
       - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
