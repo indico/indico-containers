@@ -50,12 +50,11 @@ services:
       - './data/redis:/data'
   # Postgres
   indico-postgres:
-    image: centos/postgresql-13-centos7
+    image: postgres:13-bookworm
     environment:
-      - POSTGRESQL_USER=${PGUSER}
-      - POSTGRESQL_PASSWORD=${PGPASSWORD}
-      - POSTGRESQL_DATABASE=${PGDATABASE}
-      - POSTGRESQL_ADMIN_PASSWORD=${PGPASSWORD}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DATABASE=${PGDATABASE}
     networks:
       - backend
   # Nginx proxy
