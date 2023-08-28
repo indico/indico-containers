@@ -2,11 +2,8 @@ FROM python:3.11-bullseye
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
-ARG KRB_CACHE_DIR='/var/run/keytab'
 ARG pip="${INDICO_VIRTUALENV}/bin/pip"
 ARG tag="latest"
-
-ENV KRB_CACHE_DIR ${KRB_CACHE_DIR}
 
 USER root
 
@@ -36,8 +33,6 @@ RUN ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
 EXPOSE 59999
 
 COPY uwsgi.ini /etc/uwsgi.ini
-
-VOLUME ${KRB_CACHE_DIR}
 
 WORKDIR /opt/indico
 
