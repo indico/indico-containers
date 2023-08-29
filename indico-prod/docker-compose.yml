@@ -76,13 +76,11 @@ services:
       - "${NGINX_PORT:-8080}:8080"
     volumes:
       - 'static-files:/opt/indico/static:ro'
-      - 'nginx-logs:/var/log/nginx' # logs
 volumes:
   archive:
   static-files:
   customization:
   indico-logs:
-  nginx-logs:
   redis:
 networks:
   backend: {}
