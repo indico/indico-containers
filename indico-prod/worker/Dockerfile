@@ -46,9 +46,7 @@ else \
 fi;
 RUN ${pip} install indico-plugins
 
-RUN set -ex && \
-    ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico && \
-    ${INDICO_VIRTUALENV}/bin/indico setup create-logging-config /opt/indico/etc
+RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 
 COPY --chown=indico:indico run_indico.sh run_celery.sh set_user.sh /opt/indico/
 RUN chmod 755 /opt/indico/*.sh

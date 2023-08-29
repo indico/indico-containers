@@ -29,6 +29,10 @@ services:
         source: ${INDICO_CONFIG}
         target: /opt/indico/etc/indico.conf
         read_only: true
+      - type: bind
+        source: ${INDICO_LOGGING_CONFIG}
+        target: /opt/indico/etc/logging.yaml
+        read_only: true
     tmpfs:
       - /opt/indico/tmp:mode=0777
   # Indico celery
