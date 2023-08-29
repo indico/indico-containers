@@ -48,7 +48,8 @@ RUN ${pip} install indico-plugins
 
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 
-COPY --chown=indico:indico run_indico.sh run_celery.sh set_user.sh /opt/indico/
+COPY --chown=indico:indico run_indico.sh run_celery.sh docker_entrypoint.sh /opt/indico/
 RUN chmod 755 /opt/indico/*.sh
 
+ENTRYPOINT ["/opt/indico/docker_entrypoint.sh"]
 EXPOSE 59999

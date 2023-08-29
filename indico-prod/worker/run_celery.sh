@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. /opt/indico/.venv/bin/activate
-
 check_db_ready() {
     psql -c 'SELECT COUNT(*) FROM events.events'
 }

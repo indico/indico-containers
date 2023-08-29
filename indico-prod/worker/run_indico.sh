@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. /opt/indico/.venv/bin/activate
-
 connect_to_db() {
     psql -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE
 }
