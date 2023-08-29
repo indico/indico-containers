@@ -67,15 +67,15 @@ services:
   # Nginx proxy
   # Indico can be accessed by default via localhost:8080
   indico-nginx:
-    build: nginx
-    environment:
-      - NGINX_SERVER_NAME=${NGINX_SERVER_NAME}
+    image: ghcr.io/nginxinc/nginx-unprivileged:stable-alpine
     networks:
       - frontend
     ports:
       - "${NGINX_PORT:-8080}:8080"
     volumes:
       - 'static-files:/opt/indico/static:ro'
+      - './nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+
 volumes:
   archive:
   static-files:
