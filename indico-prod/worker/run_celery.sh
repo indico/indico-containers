@@ -15,4 +15,4 @@ until [ $? -eq 0 ]; do
 done
 
 echo 'Starting Celery...'
-indico celery worker -B
+indico celery ${1:-worker}

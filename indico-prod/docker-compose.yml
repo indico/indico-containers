@@ -32,7 +32,7 @@ services:
     tmpfs:
       - /opt/indico/tmp:mode=0777
   # Indico celery
-  indico-celery:
+  indico-celery: &indico-celery
     <<: *indico-web
     command: /opt/indico/run_celery.sh
     depends_on:
@@ -40,6 +40,10 @@ services:
     networks:
       - backend
     ports: []
+  # Indico celery beat
+  indico-celery-beat:
+    <<: *indico-celery
+    command: /opt/indico/run_celery.sh beat
   # Redis
   indico-redis:
     image: redis
