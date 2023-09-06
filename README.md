@@ -15,17 +15,19 @@ Indico will be accessible at [localhost:8080](localhost:8080). You can also acce
 
 ### Configuration
 
-There are two config files which you can use to configure this setup.
-- [prod.env](prod.env) - This file specifies general properties like the DB config, nginx port & server name and the path to `indico.conf`.
-- [indico.prod.conf](indico.prod.conf) - This is the standard `indico.conf` file used by Indico itself. It is passed to the containers as a read-only volume.
+There are a couple config files which you can use to configure this setup.
+- [indico-prod/.env](indico-prod.env) - This file specifies general settings like the DB config, nginx port and the path to `indico.conf`.
+- [indico-prod/indico.conf](indico.prod.conf) - This is a sample Indico config file. It is passed to the containers as a read-only volume. Feel free to modify it based on your needs. You can use a different config file by changing the `INDICO_CONFIG` variable in [indico-prod/.env](indico-prod.env).
+- [indico-prod/logging.yaml](indico-prod/logging.yaml) - The default logging config for Indico. Feel free to modify it or use a different config by changing the `INDICO_LOGGING_CONFIG` variable.
 
-The production setup contains:
-- _indico-web_ - Indico running behind uwsgi ([localhost:9090](localhost:9090))
+The production setup contains the following containers:
+- _indico-web_ - Indico running behind uwsgi (accessible at [localhost:9090](localhost:9090))
 - _indico-celery_ - Indico celery task runner
+- _indico-celery-beat_ - celery beat
 - _indico-redis_ - redis
-- _indico-nginx_ - nginx proxy ([localhost:8080](localhost:8080))
+- _indico-nginx_ - nginx proxy (by default accessible at [localhost:8080](localhost:8080), can be changed by updating `NGINX_PORT`)
 
-_indico-web_ uses the `getindico/indico` image from Dockerhub. You can build this image locally using the [build_latest.sh](build_latest.sh) script. The image pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use your `indico.conf` to specify which plugins you want to enable.
+_indico-web_ uses the `getindico/indico` image that we publish to Dockerhub. You can build this image locally using the [build_latest.sh](build_latest.sh) script. The image pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use the `indico.conf` file to specify which plugins you want to enable.
 
 ### Different setups
 
