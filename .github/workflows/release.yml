@@ -30,7 +30,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.x,value=${{ steps.version.outputs.indico_version }}
 
       - name: Build Docker image 🚢
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4.2.1
         with:
           context: indico/worker
           build-args: tag=${{ steps.version.outputs.indico_version }}
