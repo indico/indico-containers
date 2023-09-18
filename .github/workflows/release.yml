@@ -32,7 +32,7 @@ jobs:
       - name: Build Docker image 🚢
         uses: docker/build-push-action@v5.0.0
         with:
-          context: indico/worker
+          context: indico-prod/worker
           build-args: tag=${{ steps.version.outputs.indico_version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
