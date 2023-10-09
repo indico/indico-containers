@@ -1,6 +1,6 @@
 data/*
-*.env
-.env
+indico-prod/data/*
+indico-dev/data/*
 
 # IDE files
 .idea/
