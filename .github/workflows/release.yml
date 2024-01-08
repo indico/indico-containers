@@ -20,7 +20,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker 👀
         id: meta
-        uses: docker/metadata-action@v5.0.0
+        uses: docker/metadata-action@v5.5.0
         with:
           images: |
             ghcr.io/indico/indico
@@ -30,7 +30,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.x,value=${{ steps.version.outputs.indico_version }}
 
       - name: Build Docker image 🚢
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v5.1.0
         with:
           context: indico/worker
           build-args: tag=${{ steps.version.outputs.indico_version }}
