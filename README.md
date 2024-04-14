@@ -6,18 +6,25 @@
 
 ### Quickstart
 
-To start the containers, run:
+Before starting the containers, set a `SECRET_KEY` in the [`indico-prod/indico.conf`](indico-prod/indico.conf) file. You can generate one by running the following snippet from the terminal:
+
+```sh
+python -c 'import os; print(repr(os.urandom(32)))'
+```
+
+Once this is done, start the containers with:
+
 ```sh
 $ cd indico-prod && docker compose up
 ```
 
-Indico will be accessible at [localhost:8080](localhost:8080). You can also access the wsgi app directly at [localhost:9090](localhost:9090) which skips the nginx proxy.
+Indico will be accessible at [localhost:8080](localhost:8080). You can also access the wsgi app directly at [localhost:9090](localhost:9090) which skips the nginx proxy. If you do this, make sure to update `BASE_URL` in the [`indico-prod/indico.conf`](indico-prod/indico.conf) file.
 
 ### Configuration
 
 There are a couple config files which you can use to configure this setup.
-- [indico-prod/.env](indico-prod.env) - This file specifies general settings like the DB config, nginx port and the path to `indico.conf`.
-- [indico-prod/indico.conf](indico.prod.conf) - This is a sample Indico config file. It is passed to the containers as a read-only volume. Feel free to modify it based on your needs. You can use a different config file by changing the `INDICO_CONFIG` variable in [indico-prod/.env](indico-prod.env).
+- [indico-prod/.env](indico-prod/.env) - This file specifies general settings like the DB config, nginx port and the path to `indico.conf`.
+- [indico-prod/indico.conf](indico-prod/indico.conf) - This is a sample Indico config file. It is passed to the containers as a read-only volume. Feel free to modify it based on your needs. You can use a different config file by changing the `INDICO_CONFIG` variable in [indico-prod/.env](indico-prod/.env).
 - [indico-prod/logging.yaml](indico-prod/logging.yaml) - The default logging config for Indico. Feel free to modify it or use a different config by changing the `INDICO_LOGGING_CONFIG` variable.
 
 The production setup contains the following containers:
