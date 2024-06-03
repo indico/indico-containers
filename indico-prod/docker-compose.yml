@@ -64,6 +64,8 @@ services:
       - POSTGRES_DATABASE=${PGDATABASE}
     networks:
       - backend
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data'
   # Nginx proxy
   # Indico can be accessed by default via localhost:8080
   indico-nginx:
@@ -77,6 +79,7 @@ services:
       - './nginx.conf:/etc/nginx/conf.d/default.conf:ro'
 
 volumes:
+  postgres-data:
   archive:
   static-files:
   customization:
