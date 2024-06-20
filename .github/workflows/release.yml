@@ -18,12 +18,17 @@ jobs:
           echo indico_version="${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo indico_version="${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+      - name: Set owner
+        id: owner
+        run: |
+          echo "::set-output name=owner::${GITHUB_REPOSITORY%/*}"
+
       - name: Extract metadata (tags, labels) for Docker 👀
         id: meta
         uses: docker/metadata-action@v5.5.1
         with:
           images: |
-            ghcr.io/indico/indico
+            ghcr.io/${{ steps.owner.outputs.owner }}/indico
             getindico/indico
           tags: |
             type=semver,pattern={{version}},value=${{ steps.version.outputs.indico_version }}
@@ -103,7 +108,8 @@ jobs:
 
       - name: Push Docker image 🚢
         run: |
-          docker push --all-tags ghcr.io/indico/indico
+          OWNER=${GITHUB_REPOSITORY%/*}
+          docker push --all-tags ghcr.io/${OWNER}/indico
 
       # - name: Delete build artifact 🗑
       #   if: success() || failure()
