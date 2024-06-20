@@ -1,4 +1,3 @@
-version: "3"
 services:
   # The main Indico container which runs flask
   # The same image is also used to run celery
