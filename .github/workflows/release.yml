@@ -41,8 +41,6 @@ jobs:
       - name: Test if Indico works 🧪
         run: |
           docker load --input /tmp/indico-image.tar
-          cp indico.env.sample indico.env
-          sed -i -E 's/image: getindico\/indico:latest/image: getindico\/indico:${indico_version}/' docker-compose.yml
           ./test.sh
 
       # XXX Using the cache as a hack to workaround extremely slow artifact uploads (5 minutes+ for less than 1GB)
