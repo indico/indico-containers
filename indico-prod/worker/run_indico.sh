@@ -15,8 +15,9 @@ psql -c 'SELECT COUNT(*) FROM events.events'
 
 if [ $? -eq 1 ]; then
     echo 'Preparing DB...'
-    echo 'CREATE EXTENSION unaccent;' | psql
-    echo 'CREATE EXTENSION pg_trgm;' | psql
+    echo 'CREATE EXTENSION IF NOT EXISTS unaccent;' | psql
+    echo 'CREATE EXTENSION IF NOT EXISTS pg_trgm;' | psql
+    echo 'Running indico db prepare..'
     indico db prepare
 fi
 
