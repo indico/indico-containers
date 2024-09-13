@@ -62,26 +62,3 @@ $ docker run \
 ```
 
 In the above, we omit the network setup to make e.g. the DB accessible from the containers.
-
-## OpenShift
-
-```sh
-$ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=<db_name>
---from-literal=pghost=<db_host> --from-literal=pguser=<db_user> --from-literal=pgport=<db_port>
---from-literal=pgpassword=<db_password> --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
---from-literal=storage=<storage> --from-literal=attachmentstorage=<attachment_storage>
-
-
-$ cd openshift/
-$ ./create.sh
-```
-
-In case you want to run the postgres container instead of DBoD (DataBase On Demand), keep in mind to set the `pghost`
-literal as `indico-postgres` and the rest of literals accordingly:
-
-```sh
-$ oc create configmap settings --from-literal=baseurl=<base_url> --from-literal=pgdatabase=indico
---from-literal=pghost=indico-postgres --from-literal=pguser=indico --from-literal=pgport=5432
---from-literal=pgpassword=indicopass --from-literal=sentrydsn=<sentrydsn> --from-literal=secretkey=<secretkey>
---from-literal=storage=<storage> --from-literal=attachmentstorage=<attachment_storage>
-```
