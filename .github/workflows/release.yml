@@ -21,7 +21,7 @@ jobs:
       - name: Set owner
         id: owner
         run: |
-          echo "::set-output name=owner::${GITHUB_REPOSITORY%/*}"
+          echo "owner=${GITHUB_REPOSITORY%/*}" >> $GITHUB_OUTPUT
 
       - name: Extract metadata (tags, labels) for Docker 👀
         id: meta
