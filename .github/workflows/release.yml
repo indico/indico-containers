@@ -9,7 +9,7 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-22.04
     steps:
-      - uses: docker/setup-buildx-action@v3.0.0
+      - uses: docker/setup-buildx-action@v3.3.0
       - uses: actions/checkout@v4
 
       - name: Get version
@@ -18,21 +18,26 @@ jobs:
           echo indico_version="${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo indico_version="${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+      - name: Set owner
+        id: owner
+        run: |
+          echo "::set-output name=owner::${GITHUB_REPOSITORY%/*}"
+
       - name: Extract metadata (tags, labels) for Docker 👀
         id: meta
-        uses: docker/metadata-action@v5.0.0
+        uses: docker/metadata-action@v5.5.1
         with:
           images: |
-            ghcr.io/indico/indico
+            ghcr.io/${{ steps.owner.outputs.owner }}/indico
             getindico/indico
           tags: |
             type=semver,pattern={{version}},value=${{ steps.version.outputs.indico_version }}
             type=semver,pattern={{major}}.{{minor}}.x,value=${{ steps.version.outputs.indico_version }}
 
       - name: Build Docker image 🚢
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v6.0.2
         with:
-          context: indico/worker
+          context: indico-prod/worker
           build-args: tag=${{ steps.version.outputs.indico_version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -41,8 +46,6 @@ jobs:
       - name: Test if Indico works 🧪
         run: |
           docker load --input /tmp/indico-image.tar
-          cp indico.env.sample indico.env
-          sed -i -E 's/image: getindico\/indico:latest/image: getindico\/indico:${indico_version}/' docker-compose.yml
           ./test.sh
 
       # XXX Using the cache as a hack to workaround extremely slow artifact uploads (5 minutes+ for less than 1GB)
@@ -52,7 +55,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifact 🔼
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
@@ -86,7 +89,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Download build artifact 🔽
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
@@ -97,7 +100,7 @@ jobs:
           docker image ls -a | grep indico
 
       - name: Log in to GHCR 🔑
-        uses: docker/login-action@v3.0.0
+        uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -105,7 +108,8 @@ jobs:
 
       - name: Push Docker image 🚢
         run: |
-          docker push --all-tags ghcr.io/indico/indico
+          OWNER=${GITHUB_REPOSITORY%/*}
+          docker push --all-tags ghcr.io/${OWNER}/indico
 
       # - name: Delete build artifact 🗑
       #   if: success() || failure()
@@ -133,7 +137,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Download build artifact 🔽
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
@@ -144,7 +148,7 @@ jobs:
           docker image ls -a | grep indico
 
       - name: Log in to Docker Hub 🔑
-        uses: docker/login-action@v3.0.0
+        uses: docker/login-action@v3.2.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}

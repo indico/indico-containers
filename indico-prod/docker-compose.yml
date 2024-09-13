@@ -1,0 +1,89 @@
+services:
+  # The main Indico container which runs flask
+  # The same image is also used to run celery
+  indico-web: &indico-web
+    build: worker
+    command: /opt/indico/run_indico.sh
+    depends_on:
+      - indico-redis
+      - indico-celery
+    environment:
+      - PGHOST=${PGHOST}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+    networks:
+      - backend
+      - frontend
+    ports:
+     # Indico is accessible either via nginx (localhost:8080 by default), or
+     # directly via localhost:9090. In that case, static assets are served by flask
+      - "9090:59999"
+    volumes:
+      - 'archive:/opt/indico/archive' # file storage
+      - 'customization:/opt/indico/custom'
+      - 'static-files:/opt/indico/static'
+      - 'indico-logs:/opt/indico/log' # logs
+      - type: bind
+        source: ${INDICO_CONFIG}
+        target: /opt/indico/etc/indico.conf
+        read_only: true
+      - type: bind
+        source: ${INDICO_LOGGING_CONFIG}
+        target: /opt/indico/etc/logging.yaml
+        read_only: true
+    tmpfs:
+      - /opt/indico/tmp:mode=0777
+  # Indico celery
+  indico-celery: &indico-celery
+    <<: *indico-web
+    command: /opt/indico/run_celery.sh
+    depends_on:
+      - indico-redis
+    networks:
+      - backend
+    ports: []
+  # Indico celery beat
+  indico-celery-beat:
+    <<: *indico-celery
+    command: /opt/indico/run_celery.sh beat
+  # Redis
+  indico-redis:
+    image: redis
+    networks:
+      - backend
+    volumes:
+      - 'redis:/data'
+  # Postgres
+  indico-postgres:
+    image: postgres:15-bookworm
+    environment:
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DATABASE=${PGDATABASE}
+    networks:
+      - backend
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data'
+  # Nginx proxy
+  # Indico can be accessed by default via localhost:8080
+  indico-nginx:
+    image: ghcr.io/nginxinc/nginx-unprivileged:stable-alpine
+    networks:
+      - frontend
+    ports:
+      - "${NGINX_PORT:-8080}:8080"
+    volumes:
+      - 'static-files:/opt/indico/static:ro'
+      - './nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+
+volumes:
+  postgres-data:
+  archive:
+  static-files:
+  customization:
+  indico-logs:
+  redis:
+networks:
+  backend: {}
+  frontend: {}

@@ -3,22 +3,27 @@ name: CI
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   test:
-    name: Test docker-compose build
+    name: Test docker compose
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Prepare config
+        # Rebuild the worker image instead of using getindico/indico:latest
         run: |
+          cd indico-prod
           pip install yq
-          cp indico.env.sample indico.env
-          ~/.local/bin/yq '. | .services["indico-web"].build = "./indico/worker"' docker-compose.yml > docker-compose.local.yml
+          ~/.local/bin/yq '. | .services["indico-web"].build = "./worker"' docker-compose.yml > docker-compose.local.yml
 
       - name: Build containers
-        run: docker-compose -f docker-compose.local.yml build
+        run: |
+          cd indico-prod
+          docker compose -f docker-compose.local.yml build
 
       - name: Test if Indico works
         run: ./test.sh

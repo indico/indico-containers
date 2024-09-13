@@ -38,13 +38,6 @@ objects:
   kind: ImageStream
   metadata:
     creationTimestamp: null
-    name: indico-krbclient
-  spec: {}
-
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
     name: indico-redis
   spec:
     tags:
@@ -142,44 +135,6 @@ objects:
   status:
     lastVersion: 0
 
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: indico-web
-    name: indico-krbclient
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: indico-krbclient:latest
-    postCommit: {}
-    resources:
-      limits:
-        cpu: 400m
-        memory: 2Gi
-      requests:
-        cpu: 100m
-        memory: 512Mi
-    runPolicy: Serial
-    source:
-      contextDir: indico/krbclient/
-      git:
-        ref: master
-        uri: https://github.com/indico/indico-containers.git
-      type: Git
-    strategy:
-      dockerStrategy:
-        noCache: true
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-  status:
-    lastVersion: 0
-
 ### Persistent Volume claims
 
 - apiVersion: v1
@@ -242,21 +197,6 @@ objects:
         storage: 100Mi
   status: {}
 
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      io.kompose.service: krbclient
-    name: krbclient
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 10Mi
-  status: {}
-
 ### Deployment configurations
 
 - apiVersion: v1
@@ -279,21 +219,6 @@ objects:
           io.kompose.service: indico-web
       spec:
         containers:
-        - name: krbclient
-          image: ' '
-          env:
-          - name: KEYTAB_USER
-          - name: KEYTAB_PWD
-          resources:
-            limits:
-              cpu: 400m
-              memory: 100Mi
-            requests:
-              cpu: 200m
-              memory: 50Mi
-          volumeMounts:
-          - mountPath: /var/run/keytab
-            name: krbclient
         - name: indico-web
           image: ' '
           args:
@@ -413,8 +338,6 @@ objects:
             name: customization
           - mountPath: /opt/indico/tmp
             name: indico-web-tmpfs0
-          - mountPath: /var/run/keytab
-            name: krbclient
         restartPolicy: Always
         volumes:
         - name: indico-web-claim0
@@ -426,9 +349,6 @@ objects:
         - name: customization
           persistentVolumeClaim:
             claimName: customization
-        - name: krbclient
-          persistentVolumeClaim:
-            claimName: krbclient
         - emptyDir:
             medium: Memory
           name: indico-web-tmpfs0
@@ -443,14 +363,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: indico-worker-custom:stable
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - krbclient
-        from:
-          kind: ImageStreamTag
-          name: indico-krbclient:latest
   status: {}
 
 - apiVersion: v1

@@ -1,0 +1,54 @@
+version: 1
+
+root:
+  level: INFO
+  handlers: [other]
+
+loggers:
+  indico:
+    handlers: [indico, email]
+  celery:
+    handlers: [celery, email, stderr]
+
+handlers:
+  indico:
+    class: logging.FileHandler
+    filename: indico.log
+    filters: [indico]
+    formatter: default
+  celery:
+    class: logging.FileHandler
+    filename: celery.log
+    filters: [celery]
+    formatter: simple
+  other:
+    class: logging.FileHandler
+    filename: other.log
+    filters: [other]
+    formatter: simple
+    level: WARNING
+  stderr:
+    class: logging.StreamHandler
+    formatter: default
+  email:
+    class: indico.core.logger.FormattedSubjectSMTPHandler
+    formatter: email
+    level: ERROR
+
+formatters:
+  default:
+    format: '%(asctime)s  %(levelname)-7s  %(request_id)s  %(user_id)-6s  %(name)-25s %(message)s'
+  simple:
+    format: '%(asctime)s  %(levelname)-7s  %(name)-25s %(message)s'
+  email:
+    append_request_info: true
+    format: "%(asctime)s  %(request_id)s  %(user_id)-6s  %(name)s - %(levelname)s %(filename)s:%(lineno)d -- %(message)s\n\n"
+
+filters:
+  indico:
+    name: indico
+  celery:
+    name: celery
+  other:
+    (): indico.core.logger.BlacklistFilter
+    names: [indico, celery]
