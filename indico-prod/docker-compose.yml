@@ -2,7 +2,7 @@ services:
   # The main Indico container which runs flask
   # The same image is also used to run celery
   indico-web: &indico-web
-    image: getindico/indico:latest
+    build: worker
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis
