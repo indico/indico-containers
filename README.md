@@ -4,6 +4,14 @@
 
 ## Production-like setup
 
+> [!IMPORTANT]
+> The Docker configuration described here is provided *as is* and might require
+> further modifications depending on your system. Note that, we do not use this
+> setup ourselves so it is not as battle-tested as one of our official
+> [installation guides](https://docs.getindico.io/en/stable/installation/). We
+> are happy to provide guidance if needed, but a good working knowledge of
+> Docker is recommended.
+
 ### Quickstart
 
 Before starting the containers, set a `SECRET_KEY` in the [`indico-prod/indico.conf`](indico-prod/indico.conf) file. You can generate one by running the following snippet from the terminal:
