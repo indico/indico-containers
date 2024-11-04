@@ -9,7 +9,7 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-22.04
     steps:
-      - uses: docker/setup-buildx-action@v3.6.1
+      - uses: docker/setup-buildx-action@v3.7.1
       - uses: actions/checkout@v4
 
       - name: Get version
