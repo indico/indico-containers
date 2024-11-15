@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM python:3.12-alpine
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
@@ -9,7 +9,7 @@ USER root
 # Install dependencies
 RUN set -ex && apk update && \
     apk add --no-cache libpq-dev postgresql-client vim less bash curl gettext git nodejs npm zip wget \
-                       gcc g++ make musl-dev linux-headers mupdf-dev freetype-dev
+                       gcc g++ make musl-dev linux-headers mupdf-dev freetype-dev pango
     # gcc, g++, make, musl-dev, linux-headers, mupdf-dev and freetype-dev are needed to build some python and/or node libraries
 
 # Install maildump
