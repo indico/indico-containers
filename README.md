@@ -58,14 +58,14 @@ The `getindico/indico` image can also be used completely standalone outside of t
 This is how you can run Indico on its own:
 ```sh
 $ docker run \
-    type=bind,src=/path/to/indico.conf,target=/opt/indico/etc/indico.conf \
+    --mount type=bind,src=/path/to/indico.conf,target=/opt/indico/etc/indico.conf \
     getindico/indico /opt/indico/run_indico.sh
 ```
 
 Or to run celery from the same image:
 ```sh
 $ docker run \
-    type=bind,src=/path/to/indico.conf,target=/opt/indico/etc/indico.conf \
+    --mount type=bind,src=/path/to/indico.conf,target=/opt/indico/etc/indico.conf \
     getindico/indico /opt/indico/run_celery.sh
 ```
 
