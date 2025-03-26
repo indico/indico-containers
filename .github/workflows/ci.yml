@@ -7,8 +7,8 @@ on:
     branches: [master]
 
 jobs:
-  test:
-    name: Test docker compose
+  test-prod:
+    name: '[Prod] Test docker compose'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -26,4 +26,18 @@ jobs:
           docker compose -f docker-compose.local.yml build
 
       - name: Test if Indico works
-        run: ./test.sh
+        run: ./test.sh prod
+
+  test-dev:
+    name: '[Dev] Test docker compose'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build containers
+        run: |
+          cd indico-dev
+          docker compose build
+
+      - name: Test if Indico works
+        run: ./test.sh dev
