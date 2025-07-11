@@ -22,7 +22,7 @@ services:
     volumes:
       - 'archive:/opt/indico/archive' # file storage
       - 'customization:/opt/indico/custom'
-      - 'static-files:/opt/indico/static'
+      - 'static-files:/opt/indico/static-shared'
       - 'indico-logs:/opt/indico/log' # logs
       - type: bind
         source: ${INDICO_CONFIG}

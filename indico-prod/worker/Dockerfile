@@ -14,7 +14,7 @@ RUN set -ex && \
 
 RUN set -ex && \
     apt-get update && \
-    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less gcc gettext libldap2-dev && \
+    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less gcc gettext libldap2-dev rsync && \
     apt-get clean
 
 COPY uwsgi.ini /etc/uwsgi.ini
@@ -26,6 +26,7 @@ RUN set -ex && \
     mkdir -p --mode=750 /opt/indico/log && \
     mkdir -p --mode=750 /opt/indico/cache && \
     mkdir -p --mode=750 /opt/indico/archive && \
+    mkdir -p --mode=750 /opt/indico/static-shared && \
     chown -R indico:indico /opt/indico
 
 # XXX do we still need this?

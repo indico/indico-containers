@@ -4,6 +4,9 @@ connect_to_db() {
     psql -lqt | cut -d \| -f 1 | grep -qw $PGDATABASE
 }
 
+echo "Copying static files to a shared volume..."
+rsync --archive --delete /opt/indico/static/ /opt/indico/static-shared/
+
 # Wait until the DB becomes available
 until connect_to_db; do
     echo "Waiting for DB to become available..."
