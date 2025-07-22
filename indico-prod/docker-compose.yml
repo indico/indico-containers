@@ -60,7 +60,7 @@ services:
     environment:
       - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
-      - POSTGRES_DATABASE=${PGDATABASE}
+      - POSTGRES_DB=${PGDATABASE}
     networks:
       - backend
     volumes:
@@ -69,6 +69,8 @@ services:
   # Indico can be accessed by default via localhost:8080
   indico-nginx:
     image: ghcr.io/nginxinc/nginx-unprivileged:stable-alpine
+    depends_on:
+      - indico-web
     networks:
       - frontend
     ports:
