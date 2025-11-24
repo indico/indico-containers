@@ -11,7 +11,7 @@ jobs:
     name: Test docker compose
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Prepare config
         # Rebuild the worker image instead of using getindico/indico:latest
