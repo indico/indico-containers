@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: docker/setup-buildx-action@v3.11.1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get version
         id: version
