@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm
+FROM python:3.12-trixie
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
