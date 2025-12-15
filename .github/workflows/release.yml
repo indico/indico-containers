@@ -55,7 +55,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifact 🔼
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
@@ -89,7 +89,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Download build artifact 🔽
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
@@ -137,7 +137,7 @@ jobs:
           echo "cache_key=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Download build artifact 🔽
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: indico-image-${{ steps.unique_id.outputs.cache_key }}
           path: /tmp/indico-image.tar
