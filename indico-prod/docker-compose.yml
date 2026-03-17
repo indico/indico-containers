@@ -3,6 +3,8 @@ services:
   # The same image is also used to run celery
   indico-web: &indico-web
     build: worker
+    # privileged is ONLY needed if you want to use LaTeX builds
+    privileged: true
     command: /opt/indico/run_indico.sh
     depends_on:
       - indico-redis

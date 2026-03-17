@@ -2,20 +2,21 @@ FROM python:3.12-trixie
 
 ENV INDICO_VIRTUALENV="/opt/indico/.venv" INDICO_CONFIG="/opt/indico/etc/indico.conf"
 
-ARG pip="${INDICO_VIRTUALENV}/bin/pip"
 ARG tag="latest"
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # create indico user, install apt dependencies as root and setup uwsgi etc.
 USER root
 
 RUN set -ex && \
-	groupadd -r indico && \
-	useradd -r -g indico -m -d /opt/indico indico
+    apt-get update && \
+    apt-get -y install libpq-dev postgresql-client vim less gcc gettext libldap2-dev rsync podman && \
+    apt-get clean
 
 RUN set -ex && \
-    apt-get update && \
-    apt-get -y install texlive-xetex libpq-dev postgresql-client vim less gcc gettext libldap2-dev rsync && \
-    apt-get clean
+    groupadd -r indico && \
+    useradd -r -g indico -m -d /opt/indico --add-subids-for-system indico
 
 COPY uwsgi.ini /etc/uwsgi.ini
 WORKDIR /opt/indico
@@ -37,15 +38,14 @@ USER indico
 
 RUN set -ex && \
     python -m venv ${INDICO_VIRTUALENV} && \
-    ${pip} install --upgrade pip setuptools wheel && \
-    ${pip} install uwsgi
+    uv pip install uwsgi
 
 RUN if [ "$tag" = "latest" ]; then \
-    ${pip} install indico; \
+    uv pip install indico; \
 else \
-    ${pip} install indico==${tag}; \
+    uv pip install indico==${tag}; \
 fi;
-RUN ${pip} install indico-plugins
+RUN uv pip install indico-plugins
 
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 

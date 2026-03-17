@@ -24,5 +24,14 @@ if [ $? -eq 1 ]; then
     indico db prepare
 fi
 
+# Check if latex is used and pull container image
+echo 'Checking latex config'
+if cat /opt/indico/etc/indico.conf | grep XELATEX_PATH | grep podman; then
+    echo 'LaTeX using podman is enabled, pulling container image'
+    indico maint pull-latex-image
+else
+    echo 'No need to pull container image'
+fi
+
 echo 'Starting Indico...'
 uwsgi /etc/uwsgi.ini
