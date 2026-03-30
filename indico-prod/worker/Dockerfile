@@ -10,13 +10,14 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 USER root
 
 RUN set -ex && \
+    groupadd -r -g 999 indico && \
+    useradd -r -u 999 -g indico -m -d /opt/indico indico && \
+    usermod indico --add-subuids 1000000-1065535 --add-subgids 1000000-1065535
+
+RUN set -ex && \
     apt-get update && \
     apt-get -y install libpq-dev postgresql-client vim less gcc gettext libldap2-dev rsync podman && \
     apt-get clean
-
-RUN set -ex && \
-    groupadd -r indico && \
-    useradd -r -g indico -m -d /opt/indico --add-subids-for-system indico
 
 COPY uwsgi.ini /etc/uwsgi.ini
 WORKDIR /opt/indico
