@@ -34,4 +34,4 @@ else
 fi
 
 echo 'Starting Indico...'
-uwsgi /etc/uwsgi.ini
+exec uwsgi /etc/uwsgi.ini
