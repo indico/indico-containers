@@ -44,6 +44,8 @@ The production setup contains the following containers:
 
 _indico-web_ uses the `getindico/indico` image that we publish to Dockerhub. You can build this image locally using the [build_latest.sh](build_latest.sh) script. The image pulls the latest Indico release from PyPI together with the `indico-plugins` package. You can use the `indico.conf` file to specify which plugins you want to enable.
 
+The image includes `python-ldap` for Indico’s LDAP authentication and identity providers. To enable either provider, follow the [Indico LDAP configuration guide](https://docs.getindico.io/en/stable/config/auth/#ldap) in your `indico.conf`.
+
 ### Different setups
 
 If you don't need the DB and the nginx proxy, you can just run:
