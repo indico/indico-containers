@@ -16,7 +16,7 @@ RUN set -ex && \
 
 RUN set -ex && \
     apt-get update && \
-    apt-get -y install libpq-dev postgresql-client vim less gcc gettext libldap2-dev rsync podman && \
+    apt-get -y install libpq-dev postgresql-client vim less gcc gettext libldap2-dev libsasl2-dev rsync podman && \
     apt-get clean
 
 COPY uwsgi.ini /etc/uwsgi.ini
@@ -46,7 +46,7 @@ RUN if [ "$tag" = "latest" ]; then \
 else \
     uv pip install indico==${tag}; \
 fi;
-RUN uv pip install indico-plugins
+RUN uv pip install indico-plugins python-ldap
 
 RUN ${INDICO_VIRTUALENV}/bin/indico setup create-symlinks /opt/indico
 
