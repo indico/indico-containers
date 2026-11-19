@@ -1,0 +1,32 @@
+server {
+  # localhost:8080 is the main entrypoint of this docker-compose setup
+  listen 8080;
+  listen [::]:8080;
+  server_name ${NGINX_SERVER_NAME};
+
+  access_log /var/log/nginx/access.log combined;
+  access_log /dev/stdout combined;
+  error_log  /var/log/nginx/error.log info;
+  error_log  stderr info;
+
+  root       /var/empty;
+
+  sendfile on;
+
+  # Serve static files
+  location ~ ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$ {
+    alias /opt/indico/static/$1$2/$3.$5;
+  }
+
+  location ~ ^/(css|dist|images|fonts)/(.*)$ {
+    alias /opt/indico/static/$1/$2;
+  }
+
+  location / {
+    # indico-web is the container running Indico
+    proxy_pass http://indico-web:59999;
+    proxy_set_header Host $server_name;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}

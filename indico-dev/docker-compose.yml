@@ -1,0 +1,83 @@
+version: "3"
+services:
+  # The main Indico container which runs flask
+  # The same image is also used to run celery
+  indico-web: &indico-web
+    build: worker
+    command: /opt/indico/run_indico.sh
+    depends_on:
+      - indico-redis
+      - indico-celery
+    environment:
+      - PGHOST=${PGHOST}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - C_FORCE_ROOT=${C_FORCE_ROOT}
+      - TRANSIFEX_API_TOKEN=${TRANSIFEX_API_TOKEN}
+    networks:
+      - backend
+      - frontend
+    ports:
+      # Indico is accessible either via nginx (localhost:8080 by default), or
+      # directly via localhost:9090. In that case, static assets are served by flask
+      - "9090:59999"
+      # Maildump is accessible at localhost:60000
+      - "60000:60000"
+    volumes:
+      - 'archive:/opt/indico/archive' # file storage
+      - 'customization:/opt/indico/custom'
+      - 'static-files:/opt/indico/static'
+      - './data/indico/log:/opt/indico/log' # logs
+      - type: bind
+        source: ${INDICO_CONFIG}
+        target: /opt/indico/etc/indico.conf
+        read_only: true
+    tmpfs:
+      - /opt/indico/tmp
+  # Indico celery
+  indico-celery:
+    <<: *indico-web
+    command: /opt/indico/run_celery.sh
+    depends_on:
+      - indico-redis
+    networks:
+      - backend
+    ports: []
+  # Redis
+  indico-redis:
+    image: redis
+    networks:
+      - backend
+    volumes:
+      - './data/redis:/data'
+  # Postgres
+  indico-postgres:
+    image: centos/postgresql-13-centos7
+    environment:
+      - POSTGRESQL_USER=${PGUSER}
+      - POSTGRESQL_PASSWORD=${PGPASSWORD}
+      - POSTGRESQL_DATABASE=${PGDATABASE}
+      - POSTGRESQL_ADMIN_PASSWORD=${PGPASSWORD}
+    networks:
+      - backend
+  # Nginx proxy
+  # Indico can be accessed via localhost:8080
+  indico-nginx:
+    build: nginx
+    environment:
+      - NGINX_SERVER_NAME=${NGINX_SERVER_NAME}
+    networks:
+      - frontend
+    ports:
+      - "${NGINX_PORT:-8080}:8080"
+    volumes:
+      - 'static-files:/opt/indico/static:ro'
+      - './data/nginx/log:/var/log/nginx' # logs
+volumes:
+  archive:
+  static-files:
+  customization:
+networks:
+  backend: {}
+  frontend: {}
