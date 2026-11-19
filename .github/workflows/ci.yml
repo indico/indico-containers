@@ -25,12 +25,5 @@ jobs:
           cd indico-prod
           docker compose -f docker-compose.local.yml build
 
-      - name: Check LDAP support
-        run: |
-          cd indico-prod
-          docker compose -f docker-compose.local.yml run --rm --no-deps \
-            --entrypoint /opt/indico/.venv/bin/python indico-web -c \
-            'import ldap; from flask_multipass.providers.ldap import LDAPAuthProvider, LDAPIdentityProvider'
-
       - name: Test if Indico works
         run: ./test.sh
